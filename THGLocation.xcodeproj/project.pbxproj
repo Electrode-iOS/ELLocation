@@ -19,9 +19,6 @@
 		2280E1611ABB4BEC0026F13A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2280E15F1ABB4BEC0026F13A /* LaunchScreen.xib */; };
 		2280E16D1ABB4BEC0026F13A /* THGLocationExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E16C1ABB4BEC0026F13A /* THGLocationExampleTests.swift */; };
 		2280E1751ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
-		2280E1761ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
-		2280E1771ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
-		2280E1781ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
 		2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; };
 		2280E17F1ABB4D4B0026F13A /* THGLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2280E1831ABB4E130026F13A /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E11F1ABB48FB0026F13A /* THGFoundation.framework */; };
@@ -471,7 +468,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E1761ABB4C380026F13A /* LocationService.swift in Sources */,
 				2280E0FD1ABB47860026F13A /* THGLocationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -482,7 +478,6 @@
 			files = (
 				2280E1591ABB4BEC0026F13A /* SecondViewController.swift in Sources */,
 				2280E1551ABB4BEC0026F13A /* AppDelegate.swift in Sources */,
-				2280E1771ABB4C380026F13A /* LocationService.swift in Sources */,
 				2280E1571ABB4BEC0026F13A /* FirstViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -491,7 +486,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E1781ABB4C380026F13A /* LocationService.swift in Sources */,
 				2280E16D1ABB4BEC0026F13A /* THGLocationExampleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

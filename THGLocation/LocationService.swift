@@ -44,6 +44,8 @@ public struct LocationAuthorizationService {
     public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
         return locationAuthorizationProvider.requestAuthorization(authorization)
     }
+    
+    public init() {}
 }
 
 // MARK: Location Listener API
@@ -54,7 +56,7 @@ public struct LocationUpdateRequest {
     let accuracy: LocationAccuracy
     let response: LocationUpdateResponseHandler
     
-    init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
+    public init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
         self.accuracy = accuracy
         self.response = response
     }
@@ -65,16 +67,18 @@ protocol LocationUpdateProvider {
     func removeListener(listener: AnyObject)
 }
 
-public struct LocationService {
+public struct LocationUpdateService {
     let locationProvider: LocationUpdateProvider = LocationManager.shared
     
-        public func addListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
+    public func addListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
         return locationProvider.addListener(listener, request: request)
     }
     
     public func removeListener(listener: AnyObject) {
         locationProvider.removeListener(listener)
     }
+    
+    public init() {}
 }
 
 // MARK: Internal central manager class

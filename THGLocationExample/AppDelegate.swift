@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import THGLocation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -59,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        if let requestError = LocationService().addListener(self, request: request) {
+        if let requestError = LocationUpdateService().addListener(self, request: request) {
             println("LISTENER 1: error in making request. error is \(requestError.localizedDescription)")
         } else {
             println("LISTENER 1 ADDED")

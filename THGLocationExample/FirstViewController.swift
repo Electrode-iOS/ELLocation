@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import THGLocation
 
 class FirstViewController: UIViewController {
 
@@ -29,7 +30,7 @@ class FirstViewController: UIViewController {
                 }
             }
             
-            if let requestError = LocationService().addListener(listener3, request: request) {
+            if let requestError = LocationUpdateService().addListener(listener3, request: request) {
                 println("LISTENER 3: error in making request. error is \(requestError.localizedDescription)")
             } else {
                 println("LISTENER 3 ADDED")
@@ -38,7 +39,7 @@ class FirstViewController: UIViewController {
             // Schedule removal after some time seconds
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5_000_000_000), dispatch_get_main_queue()) { () -> Void in
                 println("REMOVING LISTENER 3")
-                LocationService().removeListener(listener3)
+                LocationUpdateService().removeListener(listener3)
             }
         }
         
@@ -55,7 +56,7 @@ class FirstViewController: UIViewController {
                 }
             }
             
-            if let requestError = LocationService().addListener(listener4, request: request) {
+            if let requestError = LocationUpdateService().addListener(listener4, request: request) {
                 println("LISTENER 4: error in making request. error is \(requestError.localizedDescription)")
             } else {
                 println("LISTENER 4 ADDED")
@@ -85,7 +86,7 @@ class FirstViewController: UIViewController {
             }
         }
         
-        if let requestError = LocationService().addListener(self, request: request) {
+        if let requestError = LocationUpdateService().addListener(self, request: request) {
             println("LISTENER 2: error in making request. error is \(requestError.localizedDescription)")
         } else {
             println("LISTENER 2 ADDED")
@@ -94,7 +95,7 @@ class FirstViewController: UIViewController {
         // Schedule removal after some time seconds
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 15_000_000_000), dispatch_get_main_queue()) { () -> Void in
             println("REMOVING LISTENER 2")
-            LocationService().removeListener(self)
+            LocationUpdateService().removeListener(self)
         }
     }    
 
