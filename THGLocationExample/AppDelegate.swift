@@ -50,9 +50,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func startLocationUpdates() {
+        // Set up the request
         let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
             if success {
-                println("LISTENER 1: success!!!!")
+                if let actualLocation = location {
+                    println("LISTENER 1: success! location is (\(actualLocation.coordinate.latitude), \(actualLocation.coordinate.longitude))")
+                }
             } else {
                 if let theError = error {
                     println("LISTENER 1: error is \(theError.localizedDescription)")
@@ -60,6 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        // Make the request
         if let requestError = LocationUpdateService().addListener(self, request: request) {
             println("LISTENER 1: error in making request. error is \(requestError.localizedDescription)")
         } else {
