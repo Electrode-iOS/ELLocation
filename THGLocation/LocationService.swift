@@ -115,9 +115,8 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     // MARK: LocationUpdateProvider
     
     func addListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
-        if CLLocationManager.locationServicesEnabled() {
-        } else {
-            return NSError(domain: THGLocationErrorDomain, code: THGLocationErrorCode.LocationServicesDisabled.rawValue, userInfo: nil)
+        if let locationServicesError = checkIfLocationServicesEnabled() {
+            return locationServicesError
         }
         
         let locationListener = LocationListener(listener: listener, request: request)
@@ -140,20 +139,36 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     // MARK: LocationAuthorizationProvider
     
     func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
+        if let locationServicesError = checkIfLocationServicesEnabled() {
+            return locationServicesError
+        }
+        
         let authStatus = CLLocationManager.authorizationStatus()
         var requestAuth = false
         switch authStatus {
         case .Denied, .Restricted:
-            return NSError(domain: THGLocationErrorDomain, code: THGLocationErrorCode.AuthorizationDeniedOrRestricted.rawValue, userInfo: nil)
+            return NSError(
+                domain: THGLocationErrorDomain,
+                code: THGLocationErrorCode.AuthorizationDeniedOrRestricted.rawValue,
+                userInfo: [NSLocalizedDescriptionKey: "The user has denied location services in Settings or has been restricted from using them."]
+            )
         case .NotDetermined:
             requestAuth = true
         case .AuthorizedAlways:
             if authorization != .Always {
-                return NSError(domain: THGLocationErrorDomain, code: THGLocationErrorCode.AuthorizationChanged.rawValue, userInfo: nil)
+                return NSError(
+                    domain: THGLocationErrorDomain,
+                    code: THGLocationErrorCode.AuthorizationChanged.rawValue,
+                    userInfo: [NSLocalizedDescriptionKey: "The user has granted permission to location services only when the app is in use."]
+                )
             }
         case .AuthorizedWhenInUse:
             if authorization != .WhenInUse {
-                return NSError(domain: THGLocationErrorDomain, code: THGLocationErrorCode.AuthorizationChanged.rawValue, userInfo: nil)
+                return NSError(
+                    domain: THGLocationErrorDomain,
+                    code: THGLocationErrorCode.AuthorizationChanged.rawValue,
+                    userInfo: [NSLocalizedDescriptionKey: "The user has granted permission to location services always, so use that."]
+                )
             }
         }
         
@@ -170,6 +185,18 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
     
     // MARK: Internal Interface
+    
+    private func checkIfLocationServicesEnabled() -> NSError? {
+        if CLLocationManager.locationServicesEnabled() {
+            return nil
+        } else {
+            return NSError(
+                domain: THGLocationErrorDomain,
+                code: THGLocationErrorCode.LocationServicesDisabled.rawValue,
+                userInfo: [NSLocalizedDescriptionKey: "Location services are not enabled."]
+            )
+        }
+    }
     
     private func indexOfLocationListenerForListener(listener: AnyObject) -> Int? {
         var indexOfLocationListener: Int? = nil
@@ -220,7 +247,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
     }
     
-    func cleanupLocationListeners(locationListenersToRemove: [LocationListener]) {
+    private func cleanupLocationListeners(locationListenersToRemove: [LocationListener]) {
         // Run cleanup. This is currently brute force.
         synchronized(self, { () -> Void in
             for aLocationListenerToRemove in locationListenersToRemove {
