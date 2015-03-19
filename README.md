@@ -1,8 +1,20 @@
 ## Introduction
 
-Camelot provides the `THGLocation` module. `THGLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends, thus enabling callers to get going with building their app. `THGLocation` is also designed to work well with, and to utilize other libraries in this organization.
+Camelot provides the `THGLocation` module.
 
-## Usage
+`THGLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `THGLocation` is also designed to work well with, and to utilize other libraries in this [TheHolyGrail](https://github.com/TheHolyGrail), or THG for short.
+
+## A quick word about dependencies
+
+`THGLocation`/Camelot depends on [`THGFoundation`/Excalibur](https://github.com/TheHolyGrail/Excalibur).
+
+THG projects are designed to live side-by-side in the file system, like so:
+
+* \MyProject
+* \MyProject\Excalibur
+* \MyProject\KillerRabbit
+
+## Common Usage
 
 `THGLocation` can be used for authorizing for location services and for setting up an object to receive location updates.
 
@@ -39,20 +51,16 @@ func startLocationUpdates() {
         }
     }
     
-    // Make the request
-    if let requestError = LocationUpdateService().addListener(self, request: request) {
-        println("LISTENER 1: error in making request. error is \(requestError.localizedDescription)")
+    // Add the listener
+    if let addListenerError = LocationUpdateService().addListener(self, request: request) {
+        println("LISTENER 1: error in adding the listener. error is \(addListenerError.localizedDescription)")
     } else {
         println("LISTENER 1 ADDED")
     }
 }
 ```
 
-Note that there can me an error in setting up the request and that is returned right away rather than in the handler block. You should check for that.
-
-## Dependencies
-
-`THGLocation` is dependent on [Excalibur](https://github.com/TheHolyGrail/Dennis).
+Note that there can be an error in setting up the request and that is returned right away rather than in the handler block. You should check for that.
 
 ## Contributions
 

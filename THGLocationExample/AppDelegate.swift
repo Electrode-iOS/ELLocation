@@ -63,9 +63,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        // Make the request
-        if let requestError = LocationUpdateService().addListener(self, request: request) {
-            println("LISTENER 1: error in making request. error is \(requestError.localizedDescription)")
+        // Add the listener
+        if let addListenerError = LocationUpdateService().addListener(self, request: request) {
+            println("LISTENER 1: error in adding the listener. error is \(addListenerError.localizedDescription)")
         } else {
             println("LISTENER 1 ADDED")
         }
