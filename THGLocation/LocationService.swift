@@ -22,8 +22,10 @@ public enum THGLocationErrorCode: Int {
     case LocationServicesDisabled
 }
 
-// More time and power is used going down this list as the system tries to provide a more accurate location,
-// so be conservative according to your needs. Good should work well for most cases.
+/**
+More time and power is used going down this list as the system tries to provide a more accurate location,
+so be conservative according to your needs. `Good` should work well for most cases.
+*/
 public enum LocationAccuracy: Int {
     case Good
     case Better
@@ -31,13 +33,15 @@ public enum LocationAccuracy: Int {
 }
 
 public enum LocationAuthorization {
-    case WhenInUse // Authorization for location services to be used only when the app is in use by the user.
-    case Always // Authorization for location services to be used at all times, even when the app is not in use.
+    /// Authorization for location services to be used only when the app is in use by the user.
+    case WhenInUse
+    /// Authorization for location services to be used at all times, even when the app is not in the foreground.
+    case Always
 }
 
 // MARK: Location Authorization API
 
-// An internal protocol for a class that wants to provide location authorization.
+// An internal protocol for a type that wants to provide location authorization.
 protocol LocationAuthorizationProvider {
     func requestAuthorization(authorization: LocationAuthorization) -> NSError?
 }
@@ -47,9 +51,9 @@ public struct LocationAuthorizationService {
     let locationAuthorizationProvider: LocationAuthorizationProvider = LocationManager.shared
     
     /**
-    Registers a listener to receive location updates.
+    Request the specified authorization.
     
-    :param: listener The listener to register.
+    :param: authorization The authorization being requested.
     :returns: An optional error that could happen when requesting authorization. See `THGLocationErrorCode`.
     */
     public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
@@ -61,6 +65,13 @@ public struct LocationAuthorizationService {
 
 // MARK: Location Listener API
 
+/**
+This handler is called when a location is updated or if there is an error.
+
+:param: success `true` if an updated location is available. `false` if there was an error.
+:param: location The location if `success` is `true`. `nil` otherwise.
+:param: error The error if `success` is `false`. `nil` otherwise.
+*/
 public typealias LocationUpdateResponseHandler = (success: Bool, location: CLLocation?, error: NSError?) -> Void
 
 public struct LocationUpdateRequest {
@@ -68,11 +79,10 @@ public struct LocationUpdateRequest {
     let response: LocationUpdateResponseHandler
     
     /**
-    Registers a listener to receive location updates.
+    Initializes a request to be used for registering for location updates.
     
     :param: accuracy The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered.
     :param: response This closure is called when a update is received or if there's an error.
-    :returns: An optional error that could happen when registering. See `THGLocationErrorCode`.
     */
     public init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
         self.accuracy = accuracy
@@ -80,7 +90,7 @@ public struct LocationUpdateRequest {
     }
 }
 
-// An internal protocol for a class that wants to provide location updates.
+// An internal protocol for a type that wants to provide location updates.
 protocol LocationUpdateProvider {
     func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError?
     func deregisterListener(listener: AnyObject)
@@ -92,7 +102,7 @@ public struct LocationUpdateService {
     let locationProvider: LocationUpdateProvider = LocationManager.shared
     
     /**
-    Registers a listener to receive location updates.
+    Registers a listener to receive location updates as per the parameters defined in the request.
     
     :param: listener The listener to register.
     :param: request The parameters of the request.
