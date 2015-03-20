@@ -86,8 +86,8 @@ protocol LocationUpdateProvider {
     func deregisterListener(listener: AnyObject)
 }
 
-// The interface for requesting location updates. Listeners can request they be informed of location updates
-// They can request to be removed or will be removed automatically when they are dealloced.
+// The interface for requesting location updates. Listeners can register to be informed of location updates
+// They can request to be deregistered or will be deregistered automatically when they are dealloced.
 public struct LocationUpdateService {
     let locationProvider: LocationUpdateProvider = LocationManager.shared
     
@@ -103,9 +103,9 @@ public struct LocationUpdateService {
     }
     
     /**
-    Removes a listener from receiving any more location updates.
+    Deregisters a listener from receiving any more location updates.
     
-    :param: listener The listener to remove.
+    :param: listener The listener to deregister.
     */
     public func deregisterListener(listener: AnyObject) {
         locationProvider.deregisterListener(listener)
