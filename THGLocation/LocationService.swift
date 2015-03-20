@@ -14,33 +14,44 @@ import THGFoundation
 let THGLocationErrorDomain: String = "THGLocationErrorDomain"
 
 public enum THGLocationErrorCode: Int {
+    /// The user has denied access to location services or their device has been configured to restrict it.
     case AuthorizationDeniedOrRestricted
+    /// The caller is asking for authorization that's different from what the user has provided.
     case AuthorizationChanged
+    /// Location services are disabled.
     case LocationServicesDisabled
 }
 
+// More time and power is used going down this list as the system tries to provide a more accurate location,
+// so be conservative according to your needs. Good should work well for most cases.
 public enum LocationAccuracy: Int {
-    // More time and power is used going down this list as the system tries to provide a more accurate location,
-    // so be conservative according to your needs. Good should work well for most cases.
     case Good
     case Better
     case Best
 }
 
 public enum LocationAuthorization {
-    case WhenInUse
-    case Always
+    case WhenInUse // Authorization for location services to be used only when the app is in use by the user.
+    case Always // Authorization for location services to be used at all times, even when the app is not in use.
 }
 
 // MARK: Location Authorization API
 
+// An internal protocol for a class that wants to provide location authorization.
 protocol LocationAuthorizationProvider {
     func requestAuthorization(authorization: LocationAuthorization) -> NSError?
 }
 
+// The interface for requesting location authorization
 public struct LocationAuthorizationService {
     let locationAuthorizationProvider: LocationAuthorizationProvider = LocationManager.shared
     
+    /**
+    Registers a listener to receive location updates.
+    
+    :param: listener The listener to register.
+    :returns: An optional error that could happen when requesting authorization. See `THGLocationErrorCode`.
+    */
     public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
         return locationAuthorizationProvider.requestAuthorization(authorization)
     }
@@ -50,39 +61,65 @@ public struct LocationAuthorizationService {
 
 // MARK: Location Listener API
 
-public typealias LocationUpdateResponseHandler = (Bool, CLLocation?, NSError?) -> Void
+public typealias LocationUpdateResponseHandler = (success: Bool, location: CLLocation?, error: NSError?) -> Void
 
 public struct LocationUpdateRequest {
     let accuracy: LocationAccuracy
     let response: LocationUpdateResponseHandler
     
+    /**
+    Registers a listener to receive location updates.
+    
+    :param: accuracy The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered.
+    :param: response This closure is called when a update is received or if there's an error.
+    :returns: An optional error that could happen when registering. See `THGLocationErrorCode`.
+    */
     public init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
         self.accuracy = accuracy
         self.response = response
     }
 }
 
+// An internal protocol for a class that wants to provide location updates.
 protocol LocationUpdateProvider {
-    func addListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError?
-    func removeListener(listener: AnyObject)
+    func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError?
+    func deregisterListener(listener: AnyObject)
 }
 
+// The interface for requesting location updates. Listeners can request they be informed of location updates
+// They can request to be removed or will be removed automatically when they are dealloced.
 public struct LocationUpdateService {
     let locationProvider: LocationUpdateProvider = LocationManager.shared
     
-    public func addListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
-        return locationProvider.addListener(listener, request: request)
+    /**
+    Registers a listener to receive location updates.
+    
+    :param: listener The listener to register.
+    :param: request The parameters of the request.
+    :returns: An optional error that could happen when registering. See `THGLocationErrorCode`.
+    */
+    public func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
+        return locationProvider.registerListener(listener, request: request)
     }
     
-    public func removeListener(listener: AnyObject) {
-        locationProvider.removeListener(listener)
+    /**
+    Removes a listener from receiving any more location updates.
+    
+    :param: listener The listener to remove.
+    */
+    public func deregisterListener(listener: AnyObject) {
+        locationProvider.deregisterListener(listener)
     }
     
     public init() {}
 }
 
-// MARK: Internal central manager class
+// MARK: Internal location manager class
 
+/**
+This is the internal class that is set up as a singleton that interfaces with `CLLocationManager` and adopts
+the protocols that define `THGLocation` services in the public API.
+*/
 class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationProvider, CLLocationManagerDelegate {
     static let shared: LocationManager = LocationManager()
     
@@ -114,7 +151,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     // MARK: LocationUpdateProvider
     
-    func addListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
+    func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
         if let locationServicesError = checkIfLocationServicesEnabled() {
             return locationServicesError
         }
@@ -130,7 +167,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         return nil
     }
     
-    func removeListener(listener: AnyObject) {
+    func deregisterListener(listener: AnyObject) {
         if let theIndex = indexOfLocationListenerForListener(listener) {
             removeLocationListenerAtIndex(theIndex)
         }
@@ -278,7 +315,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
                 for locationListener in self.allLocationListeners {
                     if locationListener.listener != nil {
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            locationListener.request.response(true, mostRecentLocation, nil)
+                            locationListener.request.response(success: true, location: mostRecentLocation, error: nil)
                         })
                     } else {
                         locationListenersToRemove.append(locationListener)
@@ -296,7 +333,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
                 for locationListener in self.allLocationListeners {
                     if locationListener.listener != nil {
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            locationListener.request.response(false, nil, theError)
+                            locationListener.request.response(success: false, location: nil, error: theError)
                         })
                     }
                 }
