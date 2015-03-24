@@ -261,6 +261,9 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     private func removeLocationListenerAtIndex(theIndex: Int) {
         synchronized(self, { () -> Void in
             self.allLocationListeners.removeAtIndex(theIndex)
+            if self.allLocationListeners.count == 0 {
+                self.manager.stopUpdatingLocation()
+            }
         })
         
         calculateAndUpdateAccuracy()
