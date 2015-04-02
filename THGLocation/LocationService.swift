@@ -13,13 +13,32 @@ import THGFoundation
 
 let THGLocationErrorDomain: String = "THGLocationErrorDomain"
 
-public enum THGLocationErrorCode: Int {
+public enum THGLocationError: Int, NSErrorEnum {
     /// The user has denied access to location services or their device has been configured to restrict it.
     case AuthorizationDeniedOrRestricted
-    /// The caller is asking for authorization that's different from what the user has provided.
-    case AuthorizationChanged
+    /// The caller is asking for authorization 'always' but user has granted 'when in use'.
+    case AuthorizationWhenInUse
+    /// The caller is asking for authorization 'when in use' but user has granted 'always'.
+    case AuthorizationAlways
     /// Location services are disabled.
     case LocationServicesDisabled
+    
+    public var domain: String {
+        return "io.theholygrail.THGLocationError"
+    }
+    
+    public var errorDescription: String {
+        switch self {
+        case .AuthorizationDeniedOrRestricted:
+            return "The user has denied location services in Settings or has been restricted from using them."
+        case .AuthorizationWhenInUse:
+            return "The user has granted permission to location services only when the app is in use."
+        case .AuthorizationAlways:
+            return "The user has granted permission to location services always, so use that or change it."
+        case .LocationServicesDisabled:
+            return "Location services are not enabled."
+        }
+    }
 }
 
 /**
@@ -54,7 +73,7 @@ public struct LocationAuthorizationService {
     Request the specified authorization.
     
     :param: authorization The authorization being requested.
-    :returns: An optional error that could happen when requesting authorization. See `THGLocationErrorCode`.
+    :returns: An optional error that could happen when requesting authorization. See `THGLocationError`.
     */
     public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
         return locationAuthorizationProvider.requestAuthorization(authorization)
@@ -106,7 +125,7 @@ public struct LocationUpdateService {
     
     :param: listener The listener to register.
     :param: request The parameters of the request.
-    :returns: An optional error that could happen when registering. See `THGLocationErrorCode`.
+    :returns: An optional error that could happen when registering. See `THGLocationError`.
     */
     public func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
         return locationProvider.registerListener(listener, request: request)
@@ -194,28 +213,16 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         var requestAuth = false
         switch authStatus {
         case .Denied, .Restricted:
-            return NSError(
-                domain: THGLocationErrorDomain,
-                code: THGLocationErrorCode.AuthorizationDeniedOrRestricted.rawValue,
-                userInfo: [NSLocalizedDescriptionKey: "The user has denied location services in Settings or has been restricted from using them."]
-            )
+            return NSError(THGLocationError.AuthorizationDeniedOrRestricted)
         case .NotDetermined:
             requestAuth = true
         case .AuthorizedAlways:
             if authorization != .Always {
-                return NSError(
-                    domain: THGLocationErrorDomain,
-                    code: THGLocationErrorCode.AuthorizationChanged.rawValue,
-                    userInfo: [NSLocalizedDescriptionKey: "The user has granted permission to location services only when the app is in use."]
-                )
+                return NSError(THGLocationError.AuthorizationWhenInUse)
             }
         case .AuthorizedWhenInUse:
             if authorization != .WhenInUse {
-                return NSError(
-                    domain: THGLocationErrorDomain,
-                    code: THGLocationErrorCode.AuthorizationChanged.rawValue,
-                    userInfo: [NSLocalizedDescriptionKey: "The user has granted permission to location services always, so use that."]
-                )
+                return NSError(THGLocationError.AuthorizationAlways)
             }
         }
         
@@ -237,11 +244,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         if CLLocationManager.locationServicesEnabled() {
             return nil
         } else {
-            return NSError(
-                domain: THGLocationErrorDomain,
-                code: THGLocationErrorCode.LocationServicesDisabled.rawValue,
-                userInfo: [NSLocalizedDescriptionKey: "Location services are not enabled."]
-            )
+            return NSError(THGLocationError.LocationServicesDisabled)
         }
     }
     
