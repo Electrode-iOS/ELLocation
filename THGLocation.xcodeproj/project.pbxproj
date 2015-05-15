@@ -21,6 +21,7 @@
 		2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; };
 		2280E17F1ABB4D4B0026F13A /* THGLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2285B1801B06804D0088B07B /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2285B17F1B06804D0088B07B /* THGFoundation.framework */; };
+		2285B1821B06B0910088B07B /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2285B17F1B06804D0088B07B /* THGFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,6 +106,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */,
+				2285B1821B06B0910088B07B /* THGFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +239,7 @@
 				2280E0E61ABB47860026F13A /* Frameworks */,
 				2280E0E71ABB47860026F13A /* Headers */,
 				2280E0E81ABB47860026F13A /* Resources */,
+				2285B1811B06B00D0088B07B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -273,6 +276,7 @@
 				2280E14D1ABB4BEC0026F13A /* Frameworks */,
 				2280E14E1ABB4BEC0026F13A /* Resources */,
 				2280E1821ABB4D4B0026F13A /* Embed Frameworks */,
+				2285B1831B06B0970088B07B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -380,6 +384,37 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2285B1811B06B00D0088B07B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/THGFoundation.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		2285B1831B06B0970088B07B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/THGFoundation.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2280E0E51ABB47860026F13A /* Sources */ = {
@@ -618,6 +653,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -633,6 +672,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = THGLocationExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
