@@ -2,7 +2,7 @@
 
 Camelot provides the `THGLocation` module.
 
-`THGLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `THGLocation` is also designed to work well with, and to utilize other libraries in this [TheHolyGrail](https://github.com/TheHolyGrail), or THG for short.
+`THGLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `THGLocation` is also designed to work well with, and to utilize other libraries in [TheHolyGrail](https://github.com/TheHolyGrail), or THG for short.
 
 ## A quick word about dependencies
 
@@ -66,7 +66,7 @@ Note that there can be an error in setting up the request and that is returned r
 
 We appreciate your contributions to all of our projects and look forward to interacting with you via Pull Requests, the issue tracker, via Twitter, etc.  We're happy to help you, and to have you help us.  We'll strive to answer every PR and issue and be very transparent in what we do.
 
-When contributing code, please refer to our Dennis (https://github.com/TheHolyGrail/Dennis).
+When contributing code, please refer to our [Dennis](https://github.com/TheHolyGrail/Dennis).
 
 ###### THG's Primary Contributors
 
