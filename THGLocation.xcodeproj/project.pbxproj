@@ -10,7 +10,6 @@
 		2280E0F01ABB47860026F13A /* THGLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2280E0EF1ABB47860026F13A /* THGLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2280E0F61ABB47860026F13A /* THGLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; };
 		2280E0FD1ABB47860026F13A /* THGLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E0FC1ABB47860026F13A /* THGLocationTests.swift */; };
-		2280E14A1ABB49780026F13A /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E11F1ABB48FB0026F13A /* THGFoundation.framework */; };
 		2280E1551ABB4BEC0026F13A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1541ABB4BEC0026F13A /* AppDelegate.swift */; };
 		2280E1571ABB4BEC0026F13A /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1561ABB4BEC0026F13A /* FirstViewController.swift */; };
 		2280E1591ABB4BEC0026F13A /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1581ABB4BEC0026F13A /* SecondViewController.swift */; };
@@ -21,8 +20,7 @@
 		2280E1751ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
 		2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; };
 		2280E17F1ABB4D4B0026F13A /* THGLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2280E1831ABB4E130026F13A /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E11F1ABB48FB0026F13A /* THGFoundation.framework */; };
-		2280E1841ABB4E130026F13A /* THGFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E11F1ABB48FB0026F13A /* THGFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2285B1801B06804D0088B07B /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2285B17F1B06804D0088B07B /* THGFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,20 +31,6 @@
 			remoteGlobalIDString = 2280E0E91ABB47860026F13A;
 			remoteInfo = THGLocation;
 		};
-		2280E11E1ABB48FB0026F13A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2280E1191ABB48FB0026F13A /* THGFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CACF2A0A1A9614D20084EFAE;
-			remoteInfo = THGFoundation;
-		};
-		2280E1201ABB48FB0026F13A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2280E1191ABB48FB0026F13A /* THGFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CACF2A151A9614D20084EFAE;
-			remoteInfo = THGFoundationTests;
-		};
 		2280E1671ABB4BEC0026F13A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2280E0E11ABB47860026F13A /* Project object */;
@@ -54,26 +38,12 @@
 			remoteGlobalIDString = 2280E14F1ABB4BEC0026F13A;
 			remoteInfo = THGLocationExample;
 		};
-		2280E17C1ABB4D1D0026F13A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2280E1191ABB48FB0026F13A /* THGFoundation.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CACF2A091A9614D20084EFAE;
-			remoteInfo = THGFoundation;
-		};
 		2280E1801ABB4D4B0026F13A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2280E0E11ABB47860026F13A /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2280E0E91ABB47860026F13A;
 			remoteInfo = THGLocation;
-		};
-		2280E1851ABB4E130026F13A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2280E1191ABB48FB0026F13A /* THGFoundation.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CACF2A091A9614D20084EFAE;
-			remoteInfo = THGFoundation;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -85,7 +55,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				2280E17F1ABB4D4B0026F13A /* THGLocation.framework in Embed Frameworks */,
-				2280E1841ABB4E130026F13A /* THGFoundation.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,7 +68,6 @@
 		2280E0F51ABB47860026F13A /* THGLocationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = THGLocationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2280E0FB1ABB47860026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2280E0FC1ABB47860026F13A /* THGLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = THGLocationTests.swift; sourceTree = "<group>"; };
-		2280E1191ABB48FB0026F13A /* THGFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = THGFoundation.xcodeproj; path = ../Excalibur/THGFoundation.xcodeproj; sourceTree = "<group>"; };
 		2280E1501ABB4BEC0026F13A /* THGLocationExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = THGLocationExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2280E1531ABB4BEC0026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2280E1541ABB4BEC0026F13A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -112,6 +80,7 @@
 		2280E16B1ABB4BEC0026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2280E16C1ABB4BEC0026F13A /* THGLocationExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = THGLocationExampleTests.swift; sourceTree = "<group>"; };
 		2280E1741ABB4C380026F13A /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		2285B17F1B06804D0088B07B /* THGFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = THGFoundation.framework; path = Carthage/Build/iOS/THGFoundation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,7 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E14A1ABB49780026F13A /* THGFoundation.framework in Frameworks */,
+				2285B1801B06804D0088B07B /* THGFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,7 +105,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */,
-				2280E1831ABB4E130026F13A /* THGFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,7 +121,7 @@
 		2280E0E01ABB47860026F13A = {
 			isa = PBXGroup;
 			children = (
-				2280E1061ABB483C0026F13A /* Modules */,
+				2285B17F1B06804D0088B07B /* THGFoundation.framework */,
 				2280E0EC1ABB47860026F13A /* THGLocation */,
 				2280E0F91ABB47860026F13A /* THGLocationTests */,
 				2280E1511ABB4BEC0026F13A /* THGLocationExample */,
@@ -206,23 +174,6 @@
 				2280E0FB1ABB47860026F13A /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		2280E1061ABB483C0026F13A /* Modules */ = {
-			isa = PBXGroup;
-			children = (
-				2280E1191ABB48FB0026F13A /* THGFoundation.xcodeproj */,
-			);
-			name = Modules;
-			sourceTree = "<group>";
-		};
-		2280E11A1ABB48FB0026F13A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2280E11F1ABB48FB0026F13A /* THGFoundation.framework */,
-				2280E1211ABB48FB0026F13A /* THGFoundationTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		2280E1511ABB4BEC0026F13A /* THGLocationExample */ = {
@@ -290,7 +241,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				2280E17D1ABB4D1D0026F13A /* PBXTargetDependency */,
 			);
 			name = THGLocation;
 			productName = THGLocation;
@@ -328,7 +278,6 @@
 			);
 			dependencies = (
 				2280E1811ABB4D4B0026F13A /* PBXTargetDependency */,
-				2280E1861ABB4E130026F13A /* PBXTargetDependency */,
 			);
 			name = THGLocationExample;
 			productName = THGLocationExample;
@@ -388,12 +337,6 @@
 			mainGroup = 2280E0E01ABB47860026F13A;
 			productRefGroup = 2280E0EB1ABB47860026F13A /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 2280E11A1ABB48FB0026F13A /* Products */;
-					ProjectRef = 2280E1191ABB48FB0026F13A /* THGFoundation.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				2280E0E91ABB47860026F13A /* THGLocation */,
@@ -403,23 +346,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		2280E11F1ABB48FB0026F13A /* THGFoundation.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = THGFoundation.framework;
-			remoteRef = 2280E11E1ABB48FB0026F13A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2280E1211ABB48FB0026F13A /* THGFoundationTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = THGFoundationTests.xctest;
-			remoteRef = 2280E1201ABB48FB0026F13A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2280E0E81ABB47860026F13A /* Resources */ = {
@@ -503,20 +429,10 @@
 			target = 2280E14F1ABB4BEC0026F13A /* THGLocationExample */;
 			targetProxy = 2280E1671ABB4BEC0026F13A /* PBXContainerItemProxy */;
 		};
-		2280E17D1ABB4D1D0026F13A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = THGFoundation;
-			targetProxy = 2280E17C1ABB4D1D0026F13A /* PBXContainerItemProxy */;
-		};
 		2280E1811ABB4D4B0026F13A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2280E0E91ABB47860026F13A /* THGLocation */;
 			targetProxy = 2280E1801ABB4D4B0026F13A /* PBXContainerItemProxy */;
-		};
-		2280E1861ABB4E130026F13A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = THGFoundation;
-			targetProxy = 2280E1851ABB4E130026F13A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -636,6 +552,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = THGLocation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -651,6 +571,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = THGLocation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
