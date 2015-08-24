@@ -22,23 +22,23 @@ class FirstViewController: UIViewController {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) { () -> Void in
             let request = LocationUpdateRequest(accuracy: .Better) { (success, location, error) -> Void in
                 if success {
-                    println("LISTENER 3: success!!!!")
+                    print("LISTENER 3: success!!!!")
                 } else {
                     if let theError = error {
-                        println("LISTENER 3: error is \(theError.localizedDescription)")
+                        print("LISTENER 3: error is \(theError.localizedDescription)")
                     }
                 }
             }
             
             if let requestError = LocationUpdateService().registerListener(listener3, request: request) {
-                println("LISTENER 3: error in making request. error is \(requestError.localizedDescription)")
+                print("LISTENER 3: error in making request. error is \(requestError.localizedDescription)")
             } else {
-                println("LISTENER 3 ADDED")
+                print("LISTENER 3 ADDED")
             }
             
             // Schedule removal after some time seconds
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5_000_000_000), dispatch_get_main_queue()) { () -> Void in
-                println("REMOVING LISTENER 3")
+                print("REMOVING LISTENER 3")
                 LocationUpdateService().deregisterListener(listener3)
             }
         }
@@ -48,23 +48,23 @@ class FirstViewController: UIViewController {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) { () -> Void in
             let request = LocationUpdateRequest(accuracy: .Best) { (success, location, error) -> Void in
                 if success {
-                    println("LISTENER 4: success!!!!")
+                    print("LISTENER 4: success!!!!")
                 } else {
                     if let theError = error {
-                        println("LISTENER 4: error is \(theError.localizedDescription)")
+                        print("LISTENER 4: error is \(theError.localizedDescription)")
                     }
                 }
             }
             
             if let requestError = LocationUpdateService().registerListener(listener4, request: request) {
-                println("LISTENER 4: error in making request. error is \(requestError.localizedDescription)")
+                print("LISTENER 4: error in making request. error is \(requestError.localizedDescription)")
             } else {
-                println("LISTENER 4 ADDED")
+                print("LISTENER 4 ADDED")
             }
             
             // Schedule removal after some time seconds
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10_000_000_000), dispatch_get_main_queue()) { () -> Void in
-                println("LETTING LISTENER 4 BE DEALLOCED")
+                print("LETTING LISTENER 4 BE DEALLOCED")
                 listener4 = NSObject()
             }
         }
@@ -78,23 +78,23 @@ class FirstViewController: UIViewController {
     func startLocationUpdates() {
         let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
             if success {
-                println("LISTENER 2: success!!!!")
+                print("LISTENER 2: success!!!!")
             } else {
                 if let theError = error {
-                    println("LISTENER 2: error is \(theError.localizedDescription)")
+                    print("LISTENER 2: error is \(theError.localizedDescription)")
                 }
             }
         }
         
         if let requestError = LocationUpdateService().registerListener(self, request: request) {
-            println("LISTENER 2: error in making request. error is \(requestError.localizedDescription)")
+            print("LISTENER 2: error in making request. error is \(requestError.localizedDescription)")
         } else {
-            println("LISTENER 2 ADDED")
+            print("LISTENER 2 ADDED")
         }
         
         // Schedule removal after some time seconds
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 15_000_000_000), dispatch_get_main_queue()) { () -> Void in
-            println("REMOVING LISTENER 2")
+            print("REMOVING LISTENER 2")
             LocationUpdateService().deregisterListener(self)
         }
     }    

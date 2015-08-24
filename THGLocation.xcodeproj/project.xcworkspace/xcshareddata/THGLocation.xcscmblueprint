@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "BD3881C34316158418DC7F96CD8FC9BA1C835825",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "BD3881C34316158418DC7F96CD8FC9BA1C835825" : 0,
+    "8793D34A7BF94DA191D8F935B1E0425A8C1B2681" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "B04DA839-2540-424D-B86D-1E893B990721",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "BD3881C34316158418DC7F96CD8FC9BA1C835825" : "Camelot\/",
+    "8793D34A7BF94DA191D8F935B1E0425A8C1B2681" : "Excalibur\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "THGLocation",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "THGLocation.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:TheHolyGrail\/Excalibur.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8793D34A7BF94DA191D8F935B1E0425A8C1B2681"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:TheHolyGrail\/Camelot.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "BD3881C34316158418DC7F96CD8FC9BA1C835825"
+    }
+  ]
+}

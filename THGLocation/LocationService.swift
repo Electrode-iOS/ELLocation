@@ -72,8 +72,8 @@ public struct LocationAuthorizationService {
     /**
     Request the specified authorization.
     
-    :param: authorization The authorization being requested.
-    :returns: An optional error that could happen when requesting authorization. See `THGLocationError`.
+    - parameter authorization: The authorization being requested.
+    - returns: An optional error that could happen when requesting authorization. See `THGLocationError`.
     */
     public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
         return locationAuthorizationProvider.requestAuthorization(authorization)
@@ -87,9 +87,9 @@ public struct LocationAuthorizationService {
 /**
 This handler is called when a location is updated or if there is an error.
 
-:param: success `true` if an updated location is available. `false` if there was an error.
-:param: location The location if `success` is `true`. `nil` otherwise.
-:param: error The error if `success` is `false`. `nil` otherwise.
+- parameter success: `true` if an updated location is available. `false` if there was an error.
+- parameter location: The location if `success` is `true`. `nil` otherwise.
+- parameter error: The error if `success` is `false`. `nil` otherwise.
 */
 public typealias LocationUpdateResponseHandler = (success: Bool, location: CLLocation?, error: NSError?) -> Void
 
@@ -100,8 +100,8 @@ public struct LocationUpdateRequest {
     /**
     Initializes a request to be used for registering for location updates.
     
-    :param: accuracy The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered.
-    :param: response This closure is called when a update is received or if there's an error.
+    - parameter accuracy: The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered.
+    - parameter response: This closure is called when a update is received or if there's an error.
     */
     public init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
         self.accuracy = accuracy
@@ -123,9 +123,9 @@ public struct LocationUpdateService {
     /**
     Registers a listener to receive location updates as per the parameters defined in the request.
     
-    :param: listener The listener to register.
-    :param: request The parameters of the request.
-    :returns: An optional error that could happen when registering. See `THGLocationError`.
+    - parameter listener: The listener to register.
+    - parameter request: The parameters of the request.
+    - returns: An optional error that could happen when registering. See `THGLocationError`.
     */
     public func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
         return locationProvider.registerListener(listener, request: request)
@@ -134,7 +134,7 @@ public struct LocationUpdateService {
     /**
     Deregisters a listener from receiving any more location updates.
     
-    :param: listener The listener to deregister.
+    - parameter listener: The listener to deregister.
     */
     public func deregisterListener(listener: AnyObject) {
         locationProvider.deregisterListener(listener)
@@ -187,7 +187,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         
         let locationListener = LocationListener(listener: listener, request: request)
         
-        synchronized(self, { () -> Void in
+        synchronized(self, closure: { () -> Void in
             self.allLocationListeners.append(locationListener)
         })
         
@@ -250,7 +250,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     private func indexOfLocationListenerForListener(listener: AnyObject) -> Int? {
         var indexOfLocationListener: Int? = nil
-        for (theIndex, aLocationListener) in enumerate(self.allLocationListeners) {
+        for (theIndex, aLocationListener) in self.allLocationListeners.enumerate() {
             if let actualListener: AnyObject = aLocationListener.listener {
                 if actualListener === listener {
                     indexOfLocationListener = theIndex
@@ -262,7 +262,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
     
     private func removeLocationListenerAtIndex(theIndex: Int) {
-        synchronized(self, { () -> Void in
+        synchronized(self, closure: { () -> Void in
             self.allLocationListeners.removeAtIndex(theIndex)
             if self.allLocationListeners.count == 0 {
                 self.manager.stopUpdatingLocation()
@@ -276,12 +276,12 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         var computedAccuracy: LocationAccuracy = accuracy
         
         // Map location listeners to get an array of accuracy raw values
-        var accuracyRawValues = map(allLocationListeners, { (aLocationListener: LocationListener) -> Int in
+        let accuracyRawValues = allLocationListeners.map({ (aLocationListener: LocationListener) -> Int in
             return aLocationListener.request.accuracy.rawValue
         })
         
         // Find the max in the mapped array
-        if let locationAccuracy = LocationAccuracy(rawValue: maxElement(accuracyRawValues)) {
+        if let locationAccuracy = LocationAccuracy(rawValue: accuracyRawValues.maxElement()!) {
             computedAccuracy = locationAccuracy
         }
         
@@ -302,11 +302,11 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     private func cleanupLocationListeners(locationListenersToRemove: [LocationListener]) {
         // Run cleanup. This is currently brute force.
-        synchronized(self, { () -> Void in
+        synchronized(self, closure: { () -> Void in
             for aLocationListenerToRemove in locationListenersToRemove {
                 var theIndexToRemove: Int? = nil
                 
-                for (theIndex, locationListener) in enumerate(self.allLocationListeners) {
+                for (theIndex, locationListener) in self.allLocationListeners.enumerate() {
                     if aLocationListenerToRemove === locationListener {
                         theIndexToRemove = theIndex
                         break
@@ -323,11 +323,11 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     // MARK: CLLocationManagerDelegate
     
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        if let mostRecentLocation = locations.last as? CLLocation {
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let mostRecentLocation = locations.last as CLLocation! {
             var locationListenersToRemove = [LocationListener]()
             
-            synchronized(self, { () -> Void in
+            synchronized(self, closure: { () -> Void in
                 for locationListener in self.allLocationListeners {
                     if locationListener.listener != nil {
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -343,21 +343,19 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
     }
     
-    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
-        if let theError = error {
-            synchronized(self, { () -> Void in
-                for locationListener in self.allLocationListeners {
-                    if locationListener.listener != nil {
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            locationListener.request.response(success: false, location: nil, error: theError)
-                        })
-                    }
+    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+        synchronized(self, closure: { () -> Void in
+            for locationListener in self.allLocationListeners {
+                if locationListener.listener != nil {
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        locationListener.request.response(success: false, location: nil, error: error)
+                    })
                 }
-            })
-        }
+            }
+        })
     }
     
-    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         if status == .Denied || status == .Restricted {
             manager.stopUpdatingLocation()
         }
