@@ -46,9 +46,22 @@ More time and power is used going down this list as the system tries to provide 
 so be conservative according to your needs. `Good` should work well for most cases.
 */
 public enum LocationAccuracy: Int {
+    case Coarse = 0
     case Good
     case Better
     case Best
+}
+
+/**
+Callback frequency setting. Lowest power consumption is achieved by combining LocationUpdateFrequency.ChangesOnly
+ with LocationAccuracy.Coarse
+
+- ChangesOnly: Notify listeners only when location changes. The granularity of this depends on the LocationAccuracy setting
+- Continuous:  Notify listeners at regular, frequent intervals (~1-2s)
+*/
+public enum LocationUpdateFrequency: Int {
+    case ChangesOnly
+    case Continuous
 }
 
 public enum LocationAuthorization {
@@ -95,17 +108,27 @@ public typealias LocationUpdateResponseHandler = (success: Bool, location: CLLoc
 
 public struct LocationUpdateRequest {
     let accuracy: LocationAccuracy
+    let updateFrequency: LocationUpdateFrequency
     let response: LocationUpdateResponseHandler
+    
+    /**
+    Convenience initializer defaulting updateFrequency to .Continuous
+    */
+    public init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
+        self.init(accuracy: accuracy, updateFrequency: .Continuous, response: response)
+    }
     
     /**
     Initializes a request to be used for registering for location updates.
     
     - parameter accuracy: The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered.
+    - parameter updateFrequency: The rate at which to notify the listener
     - parameter response: This closure is called when a update is received or if there's an error.
     */
-    public init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
+    public init(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency, response: LocationUpdateResponseHandler) {
         self.accuracy = accuracy
         self.response = response
+        self.updateFrequency = updateFrequency
     }
 }
 
@@ -169,12 +192,32 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
     
     class LocationListener {
+        static let locationChangeThresholdMeters: [LocationAccuracy: CLLocationDistance] = [
+            .Best: 0,
+            .Better: 10,
+            .Good: 100,
+            .Coarse: 200
+        ]
+        
         weak var listener: AnyObject?
         var request: LocationUpdateRequest
-        
+        var previousCallbackLocation: CLLocation?
+
         init(listener: AnyObject, request: LocationUpdateRequest) {
             self.listener = listener
             self.request = request
+        }
+        
+        func shouldUpdateListenerForLocation(location: CLLocation) -> Bool {
+            switch request.updateFrequency {
+            case .Continuous:
+                return true
+            case .ChangesOnly:
+                if previousCallbackLocation == nil || previousCallbackLocation?.distanceFromLocation(location) >= LocationListener.locationChangeThresholdMeters[request.accuracy] {
+                    return true
+                }
+                return false
+            }
         }
     }
     
@@ -192,7 +235,8 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         })
         
         calculateAndUpdateAccuracy()
-        manager.startUpdatingLocation()
+        startMonitoringLocation()
+        
         return nil
     }
     
@@ -239,7 +283,25 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
     
     // MARK: Internal Interface
+    private func startMonitoringLocation() {
+        if self.shouldUseSignificantUpdateService() {
+            self.manager.startMonitoringSignificantLocationChanges()
+        } else {
+            self.manager.startUpdatingLocation()
+        }
+    }
     
+    /**
+     * There are two kinds of location monitoring in iOS: significant updates and standard location monitoring.
+     * Significant updates rely entirely on cell towers and therefore have low accuracy and low power consumption.
+     * They also fire infrequently. If the user has requested location accuracy higher than .Coarse or wants
+     * continuous updates, the significant location service is inappropriate to use. Otherwise, it is a better option.
+     */
+    private func shouldUseSignificantUpdateService() -> Bool {
+        let hasContinuousListeners = allLocationListeners.filter({$0.request.updateFrequency == .Continuous}).count > 0
+        return !(hasContinuousListeners || accuracy.rawValue > LocationAccuracy.Coarse.rawValue)
+    }
+
     private func checkIfLocationServicesEnabled() -> NSError? {
         if CLLocationManager.locationServicesEnabled() {
             return nil
@@ -266,6 +328,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             self.allLocationListeners.removeAtIndex(theIndex)
             if self.allLocationListeners.count == 0 {
                 self.manager.stopUpdatingLocation()
+                self.manager.stopMonitoringSignificantLocationChanges()
             }
         })
         
@@ -290,6 +353,8 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             accuracy = computedAccuracy
             
             switch accuracy {
+            case .Coarse:
+                manager.desiredAccuracy = kCLLocationAccuracyKilometer
             case .Good:
                 manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
             case .Better:
@@ -330,9 +395,12 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             synchronized(self, closure: { () -> Void in
                 for locationListener in self.allLocationListeners {
                     if locationListener.listener != nil {
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            locationListener.request.response(success: true, location: mostRecentLocation, error: nil)
-                        })
+                        if locationListener.shouldUpdateListenerForLocation(mostRecentLocation) {
+                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                locationListener.previousCallbackLocation = mostRecentLocation
+                                locationListener.request.response(success: true, location: mostRecentLocation, error: nil)
+                            })
+                        }
                     } else {
                         locationListenersToRemove.append(locationListener)
                     }
@@ -361,7 +429,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
         
         if status == .AuthorizedWhenInUse || status == .AuthorizedAlways {
-            manager.startUpdatingLocation()
+            startMonitoringLocation()
         }
     }
 }
