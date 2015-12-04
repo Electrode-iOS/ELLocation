@@ -46,7 +46,7 @@ More time and power is used going down this list as the system tries to provide 
 so be conservative according to your needs. `Good` should work well for most cases.
 */
 public enum LocationAccuracy: Int {
-    case Coarse = 0
+    case Coarse
     case Good
     case Better
     case Best
@@ -284,10 +284,10 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     // MARK: Internal Interface
     private func startMonitoringLocation() {
-        if self.shouldUseSignificantUpdateService() {
-            self.manager.startMonitoringSignificantLocationChanges()
+        if shouldUseSignificantUpdateService() {
+            manager.startMonitoringSignificantLocationChanges()
         } else {
-            self.manager.startUpdatingLocation()
+            manager.startUpdatingLocation()
         }
     }
     
@@ -295,11 +295,13 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
      * There are two kinds of location monitoring in iOS: significant updates and standard location monitoring.
      * Significant updates rely entirely on cell towers and therefore have low accuracy and low power consumption.
      * They also fire infrequently. If the user has requested location accuracy higher than .Coarse or wants
-     * continuous updates, the significant location service is inappropriate to use. Otherwise, it is a better option.
+     * continuous updates, the significant location service is inappropriate to use. Finally, the user must have
+     * requested .Always authorization status
      */
     private func shouldUseSignificantUpdateService() -> Bool {
         let hasContinuousListeners = allLocationListeners.filter({$0.request.updateFrequency == .Continuous}).count > 0
-        return !(hasContinuousListeners || accuracy.rawValue > LocationAccuracy.Coarse.rawValue)
+        let isAccuracyCoarseEnough = accuracy.rawValue <= LocationAccuracy.Coarse.rawValue
+        return !hasContinuousListeners && isAccuracyCoarseEnough && authorization == .Always
     }
 
     private func checkIfLocationServicesEnabled() -> NSError? {

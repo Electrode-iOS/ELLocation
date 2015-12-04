@@ -68,7 +68,7 @@ It is also possible to limit the callback frequency using the `updateFrequency` 
 let request = LocationUpdateRequest(accuracy: .Good, updateFrequency: .ChangesOnly, ...)
 ```
 
-Combining `accuracy: .Coarse` with `updateFrequency: .ChangesOnly` yields the lowest battery usage, at the expense of less accurate location data.
+Combining `accuracy: .Coarse` with `updateFrequency: .ChangesOnly`, along with `requestAuthorization(.Always)` yields the lowest battery usage, at the expense of less accurate location data and infrequent updates.
 
 ## Contributions
 
