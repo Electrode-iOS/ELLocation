@@ -42,25 +42,33 @@ func startLocationUpdates() {
     let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
         if success {
             if let actualLocation = location {
-                println("LISTENER 1: success! location is (\(actualLocation.coordinate.latitude), \(actualLocation.coordinate.longitude))")
+                print("LISTENER 1: success! location is (\(actualLocation.coordinate.latitude), \(actualLocation.coordinate.longitude))")
             }
         } else {
             if let theError = error {
-                println("LISTENER 1: error is \(theError.localizedDescription)")
+                print("LISTENER 1: error is \(theError.localizedDescription)")
             }
         }
     }
     
     // Register the listener
     if let addListenerError = LocationUpdateService().registerListener(self, request: request) {
-        println("LISTENER 1: error in adding the listener. error is \(addListenerError.localizedDescription)")
+        print("LISTENER 1: error in adding the listener. error is \(addListenerError.localizedDescription)")
     } else {
-        println("LISTENER 1 ADDED")
+        print("LISTENER 1 ADDED")
     }
 }
 ```
 
 Note that there can be an error in setting up the request and that is returned right away rather than in the handler block. You should check for that.
+
+It is also possible to limit the callback frequency using the `updateFrequency` parameter of `LocationUpdateRequest` like so:
+
+```Swift
+let request = LocationUpdateRequest(accuracy: .Good, updateFrequency: .ChangesOnly, ...)
+```
+
+Combining `accuracy: .Coarse` with `updateFrequency: .ChangesOnly`, along with `requestAuthorization(.Always)` yields the lowest battery usage, at the expense of less accurate location data and infrequent updates.
 
 ## Contributions
 
