@@ -218,11 +218,11 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             requestAuth = true
         case .AuthorizedAlways:
             if authorization != .Always {
-                return NSError(THGLocationError.AuthorizationWhenInUse)
+                return NSError(THGLocationError.AuthorizationAlways)
             }
         case .AuthorizedWhenInUse:
             if authorization != .WhenInUse {
-                return NSError(THGLocationError.AuthorizationAlways)
+                return NSError(THGLocationError.AuthorizationWhenInUse)
             }
         }
         
