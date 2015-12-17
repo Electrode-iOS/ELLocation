@@ -346,7 +346,11 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         })
         
         // Find the max in the mapped array
-        if let locationAccuracy = LocationAccuracy(rawValue: accuracyRawValues.maxElement()!) {
+        guard let maxAccuracy = accuracyRawValues.maxElement() else {
+            return
+        }
+        
+        if let locationAccuracy = LocationAccuracy(rawValue: maxAccuracy) {
             computedAccuracy = locationAccuracy
         }
         
