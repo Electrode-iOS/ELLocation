@@ -74,12 +74,12 @@ public enum LocationAuthorization {
 // MARK: Location Authorization API
 
 // An internal protocol for a type that wants to provide location authorization.
-protocol LocationAuthorizationProvider {
+public protocol LocationAuthorizationProvider {
     func requestAuthorization(authorization: LocationAuthorization) -> NSError?
 }
 
 // The interface for requesting location authorization
-public struct LocationAuthorizationService {
+public struct LocationAuthorizationService: LocationAuthorizationProvider {
     let locationAuthorizationProvider: LocationAuthorizationProvider = LocationManager.shared
     
     /**
@@ -132,15 +132,15 @@ public struct LocationUpdateRequest {
     }
 }
 
-// An internal protocol for a type that wants to provide location updates.
-protocol LocationUpdateProvider {
+// A protocol for a type that wants to provide location updates.
+public protocol LocationUpdateProvider {
     func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError?
     func deregisterListener(listener: AnyObject)
 }
 
 // The interface for requesting location updates. Listeners can register to be informed of location updates
 // They can request to be deregistered or will be deregistered automatically when they are dealloced.
-public struct LocationUpdateService {
+public struct LocationUpdateService: LocationUpdateProvider {
     let locationProvider: LocationUpdateProvider = LocationManager.shared
     
     /**
