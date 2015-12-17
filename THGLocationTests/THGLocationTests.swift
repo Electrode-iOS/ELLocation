@@ -8,6 +8,8 @@
 
 import UIKit
 import XCTest
+import CoreLocation
+@testable import THGLocation
 
 class THGLocationTests: XCTestCase {
     
@@ -21,16 +23,11 @@ class THGLocationTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
+    func testCalculateAndUpdateAccuracyCrash() {
+        LocationAuthorizationService().requestAuthorization(.WhenInUse)
+        LocationAuthorizationService().requestAuthorization(.Always)
+        
+        // no crash here is a test success
+        LocationManager.shared.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
     }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
 }

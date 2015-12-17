@@ -21,6 +21,7 @@
 		2280E1751ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
 		2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; };
 		2280E17F1ABB4D4B0026F13A /* THGLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		46FBD85B1C232F7B0000E733 /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E9E981B8BDFB4000863F6 /* THGFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46FBD85B1C232F7B0000E733 /* THGFoundation.framework in Frameworks */,
 				2280E0F61ABB47860026F13A /* THGLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
