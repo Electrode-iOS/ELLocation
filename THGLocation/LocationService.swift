@@ -255,6 +255,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         
         let authStatus = CLLocationManager.authorizationStatus()
         var requestAuth = false
+        self.authorization = authorization
         switch authStatus {
         case .Denied, .Restricted:
             return NSError(THGLocationError.AuthorizationDeniedOrRestricted)
@@ -271,7 +272,6 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
         
         if requestAuth {
-            self.authorization = authorization
             switch self.authorization {
             case .Always:
                 manager.requestAlwaysAuthorization()
