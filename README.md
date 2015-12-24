@@ -1,4 +1,4 @@
-## Introduction
+# Camelot [![Build Status](https://travis-ci.org/TheHolyGrail/Camelot.svg)](https://travis-ci.org/TheHolyGrail/Camelot)
 
 Camelot provides the `THGLocation` module.
 
