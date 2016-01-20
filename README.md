@@ -1,28 +1,28 @@
-# Camelot [![Build Status](https://travis-ci.org/TheHolyGrail/Camelot.svg)](https://travis-ci.org/TheHolyGrail/Camelot)
+# ELLocation [![Build Status](https://travis-ci.org/TheHolyGrail/ELLocation.svg)](https://travis-ci.org/TheHolyGrail/ELLocation)
 
-Camelot provides the `THGLocation` module.
+ELLocation provides the `ELLocation` module.
 
-`THGLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `THGLocation` is also designed to work well with, and to utilize other libraries in [TheHolyGrail](https://github.com/TheHolyGrail), or THG for short.
+`ELLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `ELLocation` is also designed to work well with, and to utilize other libraries in [TheHolyGrail](https://github.com/TheHolyGrail), or THG for short.
 
 ## A quick word about dependencies
 
-`THGLocation`/Camelot depends on [`THGFoundation`/Excalibur](https://github.com/TheHolyGrail/Excalibur).
+`ELLocation`/ELLocation depends on [`ELFoundation`/ELFoundation](https://github.com/TheHolyGrail/ELFoundation).
 
 THG projects are designed to live side-by-side in the file system, like so:
 
 * \MyProject
-* \MyProject\Excalibur
+* \MyProject\ELFoundation
 * \MyProject\KillerRabbit
 
 ## Common Usage
 
-`THGLocation` can be used for authorizing for location services and for setting up an object to receive location updates.
+`ELLocation` can be used for authorizing for location services and for setting up an object to receive location updates.
 
 ### Authorization
 
 **Important Note:** iOS requires that you add `NSLocationWhenInUseUsageDescription` and/or `NSLocationAlwaysUsageDescription` key to the `Info.plist` file for your app as per your needs. If you miss this step, nothing will work and there will be no message to indicate why.
 
-iOS requires an app to request authorization from the user for the kind of location services it needs to use. With `THGLocation` the API looks like the following:
+iOS requires an app to request authorization from the user for the kind of location services it needs to use. With `ELLocation` the API looks like the following:
 
 ```Swift
 if let anError = LocationAuthorizationService().requestAuthorization(.WhenInUse) {

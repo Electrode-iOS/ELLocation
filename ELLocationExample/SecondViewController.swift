@@ -1,9 +1,9 @@
 //
 //  SecondViewController.swift
-//  THGLocationExample
+//  ELLocationExample
 //
 //  Created by Sam Grover on 3/19/15.
-//  Copyright (c) 2015 Set Direction. All rights reserved.
+//  Copyright (c) 2015 WalmartLabs. All rights reserved.
 //
 
 import UIKit

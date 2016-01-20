@@ -1,17 +1,17 @@
 //
-//  THGLocationTests.swift
-//  THGLocationTests
+//  ELLocationTests.swift
+//  ELLocationTests
 //
 //  Created by Sam Grover on 3/19/15.
-//  Copyright (c) 2015 Set Direction. All rights reserved.
+//  Copyright (c) 2015 WalmartLabs. All rights reserved.
 //
 
 import UIKit
 import XCTest
 import CoreLocation
-@testable import THGLocation
+@testable import ELLocation
 
-class THGLocationTests: XCTestCase {
+class ELLocationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

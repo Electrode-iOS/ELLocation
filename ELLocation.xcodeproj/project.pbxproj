@@ -7,72 +7,72 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		220E9EA41B8BE0A6000863F6 /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E9E981B8BDFB4000863F6 /* THGFoundation.framework */; };
-		2280E0F01ABB47860026F13A /* THGLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2280E0EF1ABB47860026F13A /* THGLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2280E0F61ABB47860026F13A /* THGLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; };
-		2280E0FD1ABB47860026F13A /* THGLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E0FC1ABB47860026F13A /* THGLocationTests.swift */; };
+		220E9EA41B8BE0A6000863F6 /* ELFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E9E981B8BDFB4000863F6 /* ELFoundation.framework */; };
+		2280E0F01ABB47860026F13A /* ELLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2280E0EF1ABB47860026F13A /* ELLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2280E0F61ABB47860026F13A /* ELLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* ELLocation.framework */; };
+		2280E0FD1ABB47860026F13A /* ELLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E0FC1ABB47860026F13A /* ELLocationTests.swift */; };
 		2280E1551ABB4BEC0026F13A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1541ABB4BEC0026F13A /* AppDelegate.swift */; };
 		2280E1571ABB4BEC0026F13A /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1561ABB4BEC0026F13A /* FirstViewController.swift */; };
 		2280E1591ABB4BEC0026F13A /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1581ABB4BEC0026F13A /* SecondViewController.swift */; };
 		2280E15C1ABB4BEC0026F13A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2280E15A1ABB4BEC0026F13A /* Main.storyboard */; };
 		2280E15E1ABB4BEC0026F13A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2280E15D1ABB4BEC0026F13A /* Images.xcassets */; };
 		2280E1611ABB4BEC0026F13A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2280E15F1ABB4BEC0026F13A /* LaunchScreen.xib */; };
-		2280E16D1ABB4BEC0026F13A /* THGLocationExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E16C1ABB4BEC0026F13A /* THGLocationExampleTests.swift */; };
+		2280E16D1ABB4BEC0026F13A /* ELLocationExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E16C1ABB4BEC0026F13A /* ELLocationExampleTests.swift */; };
 		2280E1751ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
-		2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; };
-		2280E17F1ABB4D4B0026F13A /* THGLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* THGLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		46FBD85B1C232F7B0000E733 /* THGFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E9E981B8BDFB4000863F6 /* THGFoundation.framework */; };
+		2280E17E1ABB4D4B0026F13A /* ELLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* ELLocation.framework */; };
+		2280E17F1ABB4D4B0026F13A /* ELLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* ELLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		46FBD85B1C232F7B0000E733 /* ELFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E9E981B8BDFB4000863F6 /* ELFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		220E9E971B8BDFB4000863F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 220E9E911B8BDFB4000863F6 /* THGFoundation.xcodeproj */;
+			containerPortal = 220E9E911B8BDFB4000863F6 /* ELFoundation.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = CACF2A0A1A9614D20084EFAE;
-			remoteInfo = THGFoundation;
+			remoteInfo = ELFoundation;
 		};
 		220E9E991B8BDFB4000863F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 220E9E911B8BDFB4000863F6 /* THGFoundation.xcodeproj */;
+			containerPortal = 220E9E911B8BDFB4000863F6 /* ELFoundation.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = CACF2A151A9614D20084EFAE;
-			remoteInfo = THGFoundationTests;
+			remoteInfo = ELFoundationTests;
 		};
 		220E9E9B1B8BDFB4000863F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 220E9E911B8BDFB4000863F6 /* THGFoundation.xcodeproj */;
+			containerPortal = 220E9E911B8BDFB4000863F6 /* ELFoundation.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = CA24104D1AF965B700AA4410;
-			remoteInfo = THGFoundation_osx;
+			remoteInfo = ELFoundation_osx;
 		};
 		220E9EA21B8BE0A6000863F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 220E9E911B8BDFB4000863F6 /* THGFoundation.xcodeproj */;
+			containerPortal = 220E9E911B8BDFB4000863F6 /* ELFoundation.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = CA8CD5631B7A9DCB00DA8BF7;
-			remoteInfo = THGFoundation_osxTests;
+			remoteInfo = ELFoundation_osxTests;
 		};
 		2280E0F71ABB47860026F13A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2280E0E11ABB47860026F13A /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2280E0E91ABB47860026F13A;
-			remoteInfo = THGLocation;
+			remoteInfo = ELLocation;
 		};
 		2280E1671ABB4BEC0026F13A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2280E0E11ABB47860026F13A /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2280E14F1ABB4BEC0026F13A;
-			remoteInfo = THGLocationExample;
+			remoteInfo = ELLocationExample;
 		};
 		2280E1801ABB4D4B0026F13A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2280E0E11ABB47860026F13A /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2280E0E91ABB47860026F13A;
-			remoteInfo = THGLocation;
+			remoteInfo = ELLocation;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -83,7 +83,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				2280E17F1ABB4D4B0026F13A /* THGLocation.framework in Embed Frameworks */,
+				2280E17F1ABB4D4B0026F13A /* ELLocation.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,14 +91,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		220E9E911B8BDFB4000863F6 /* THGFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = THGFoundation.xcodeproj; path = ../Excalibur/THGFoundation.xcodeproj; sourceTree = "<group>"; };
-		2280E0EA1ABB47860026F13A /* THGLocation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = THGLocation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		220E9E911B8BDFB4000863F6 /* ELFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ELFoundation.xcodeproj; path = ../ELFoundation/ELFoundation.xcodeproj; sourceTree = "<group>"; };
+		2280E0EA1ABB47860026F13A /* ELLocation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ELLocation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2280E0EE1ABB47860026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2280E0EF1ABB47860026F13A /* THGLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = THGLocation.h; sourceTree = "<group>"; };
-		2280E0F51ABB47860026F13A /* THGLocationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = THGLocationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2280E0EF1ABB47860026F13A /* ELLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ELLocation.h; sourceTree = "<group>"; };
+		2280E0F51ABB47860026F13A /* ELLocationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ELLocationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2280E0FB1ABB47860026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2280E0FC1ABB47860026F13A /* THGLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = THGLocationTests.swift; sourceTree = "<group>"; };
-		2280E1501ABB4BEC0026F13A /* THGLocationExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = THGLocationExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2280E0FC1ABB47860026F13A /* ELLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ELLocationTests.swift; sourceTree = "<group>"; };
+		2280E1501ABB4BEC0026F13A /* ELLocationExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ELLocationExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2280E1531ABB4BEC0026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2280E1541ABB4BEC0026F13A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2280E1561ABB4BEC0026F13A /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -106,9 +106,9 @@
 		2280E15B1ABB4BEC0026F13A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2280E15D1ABB4BEC0026F13A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		2280E1601ABB4BEC0026F13A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		2280E1661ABB4BEC0026F13A /* THGLocationExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = THGLocationExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2280E1661ABB4BEC0026F13A /* ELLocationExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ELLocationExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2280E16B1ABB4BEC0026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2280E16C1ABB4BEC0026F13A /* THGLocationExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = THGLocationExampleTests.swift; sourceTree = "<group>"; };
+		2280E16C1ABB4BEC0026F13A /* ELLocationExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ELLocationExampleTests.swift; sourceTree = "<group>"; };
 		2280E1741ABB4C380026F13A /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -117,7 +117,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				220E9EA41B8BE0A6000863F6 /* THGFoundation.framework in Frameworks */,
+				220E9EA41B8BE0A6000863F6 /* ELFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,8 +125,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46FBD85B1C232F7B0000E733 /* THGFoundation.framework in Frameworks */,
-				2280E0F61ABB47860026F13A /* THGLocation.framework in Frameworks */,
+				46FBD85B1C232F7B0000E733 /* ELFoundation.framework in Frameworks */,
+				2280E0F61ABB47860026F13A /* ELLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,7 +134,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E17E1ABB4D4B0026F13A /* THGLocation.framework in Frameworks */,
+				2280E17E1ABB4D4B0026F13A /* ELLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,7 +151,7 @@
 		220E9E901B8BDFAB000863F6 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				220E9E911B8BDFB4000863F6 /* THGFoundation.xcodeproj */,
+				220E9E911B8BDFB4000863F6 /* ELFoundation.xcodeproj */,
 			);
 			name = Modules;
 			sourceTree = "<group>";
@@ -159,10 +159,10 @@
 		220E9E921B8BDFB4000863F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				220E9E981B8BDFB4000863F6 /* THGFoundation.framework */,
-				220E9E9A1B8BDFB4000863F6 /* THGFoundationTests.xctest */,
-				220E9E9C1B8BDFB4000863F6 /* THGFoundation.framework */,
-				220E9EA31B8BE0A6000863F6 /* THGFoundation_osxTests.xctest */,
+				220E9E981B8BDFB4000863F6 /* ELFoundation.framework */,
+				220E9E9A1B8BDFB4000863F6 /* ELFoundationTests.xctest */,
+				220E9E9C1B8BDFB4000863F6 /* ELFoundation.framework */,
+				220E9EA31B8BE0A6000863F6 /* ELFoundation_osxTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -171,10 +171,10 @@
 			isa = PBXGroup;
 			children = (
 				220E9E901B8BDFAB000863F6 /* Modules */,
-				2280E0EC1ABB47860026F13A /* THGLocation */,
-				2280E0F91ABB47860026F13A /* THGLocationTests */,
-				2280E1511ABB4BEC0026F13A /* THGLocationExample */,
-				2280E1691ABB4BEC0026F13A /* THGLocationExampleTests */,
+				2280E0EC1ABB47860026F13A /* ELLocation */,
+				2280E0F91ABB47860026F13A /* ELLocationTests */,
+				2280E1511ABB4BEC0026F13A /* ELLocationExample */,
+				2280E1691ABB4BEC0026F13A /* ELLocationExampleTests */,
 				2280E0EB1ABB47860026F13A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -182,22 +182,22 @@
 		2280E0EB1ABB47860026F13A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2280E0EA1ABB47860026F13A /* THGLocation.framework */,
-				2280E0F51ABB47860026F13A /* THGLocationTests.xctest */,
-				2280E1501ABB4BEC0026F13A /* THGLocationExample.app */,
-				2280E1661ABB4BEC0026F13A /* THGLocationExampleTests.xctest */,
+				2280E0EA1ABB47860026F13A /* ELLocation.framework */,
+				2280E0F51ABB47860026F13A /* ELLocationTests.xctest */,
+				2280E1501ABB4BEC0026F13A /* ELLocationExample.app */,
+				2280E1661ABB4BEC0026F13A /* ELLocationExampleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2280E0EC1ABB47860026F13A /* THGLocation */ = {
+		2280E0EC1ABB47860026F13A /* ELLocation */ = {
 			isa = PBXGroup;
 			children = (
 				2280E1741ABB4C380026F13A /* LocationService.swift */,
-				2280E0EF1ABB47860026F13A /* THGLocation.h */,
+				2280E0EF1ABB47860026F13A /* ELLocation.h */,
 				2280E0ED1ABB47860026F13A /* Supporting Files */,
 			);
-			path = THGLocation;
+			path = ELLocation;
 			sourceTree = "<group>";
 		};
 		2280E0ED1ABB47860026F13A /* Supporting Files */ = {
@@ -208,13 +208,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		2280E0F91ABB47860026F13A /* THGLocationTests */ = {
+		2280E0F91ABB47860026F13A /* ELLocationTests */ = {
 			isa = PBXGroup;
 			children = (
-				2280E0FC1ABB47860026F13A /* THGLocationTests.swift */,
+				2280E0FC1ABB47860026F13A /* ELLocationTests.swift */,
 				2280E0FA1ABB47860026F13A /* Supporting Files */,
 			);
-			path = THGLocationTests;
+			path = ELLocationTests;
 			sourceTree = "<group>";
 		};
 		2280E0FA1ABB47860026F13A /* Supporting Files */ = {
@@ -225,7 +225,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		2280E1511ABB4BEC0026F13A /* THGLocationExample */ = {
+		2280E1511ABB4BEC0026F13A /* ELLocationExample */ = {
 			isa = PBXGroup;
 			children = (
 				2280E1541ABB4BEC0026F13A /* AppDelegate.swift */,
@@ -236,7 +236,7 @@
 				2280E15F1ABB4BEC0026F13A /* LaunchScreen.xib */,
 				2280E1521ABB4BEC0026F13A /* Supporting Files */,
 			);
-			path = THGLocationExample;
+			path = ELLocationExample;
 			sourceTree = "<group>";
 		};
 		2280E1521ABB4BEC0026F13A /* Supporting Files */ = {
@@ -247,13 +247,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		2280E1691ABB4BEC0026F13A /* THGLocationExampleTests */ = {
+		2280E1691ABB4BEC0026F13A /* ELLocationExampleTests */ = {
 			isa = PBXGroup;
 			children = (
-				2280E16C1ABB4BEC0026F13A /* THGLocationExampleTests.swift */,
+				2280E16C1ABB4BEC0026F13A /* ELLocationExampleTests.swift */,
 				2280E16A1ABB4BEC0026F13A /* Supporting Files */,
 			);
-			path = THGLocationExampleTests;
+			path = ELLocationExampleTests;
 			sourceTree = "<group>";
 		};
 		2280E16A1ABB4BEC0026F13A /* Supporting Files */ = {
@@ -271,16 +271,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E0F01ABB47860026F13A /* THGLocation.h in Headers */,
+				2280E0F01ABB47860026F13A /* ELLocation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		2280E0E91ABB47860026F13A /* THGLocation */ = {
+		2280E0E91ABB47860026F13A /* ELLocation */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2280E1001ABB47860026F13A /* Build configuration list for PBXNativeTarget "THGLocation" */;
+			buildConfigurationList = 2280E1001ABB47860026F13A /* Build configuration list for PBXNativeTarget "ELLocation" */;
 			buildPhases = (
 				2280E0E51ABB47860026F13A /* Sources */,
 				2280E0E61ABB47860026F13A /* Frameworks */,
@@ -291,14 +291,14 @@
 			);
 			dependencies = (
 			);
-			name = THGLocation;
-			productName = THGLocation;
-			productReference = 2280E0EA1ABB47860026F13A /* THGLocation.framework */;
+			name = ELLocation;
+			productName = ELLocation;
+			productReference = 2280E0EA1ABB47860026F13A /* ELLocation.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		2280E0F41ABB47860026F13A /* THGLocationTests */ = {
+		2280E0F41ABB47860026F13A /* ELLocationTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2280E1031ABB47860026F13A /* Build configuration list for PBXNativeTarget "THGLocationTests" */;
+			buildConfigurationList = 2280E1031ABB47860026F13A /* Build configuration list for PBXNativeTarget "ELLocationTests" */;
 			buildPhases = (
 				2280E0F11ABB47860026F13A /* Sources */,
 				2280E0F21ABB47860026F13A /* Frameworks */,
@@ -309,14 +309,14 @@
 			dependencies = (
 				2280E0F81ABB47860026F13A /* PBXTargetDependency */,
 			);
-			name = THGLocationTests;
-			productName = THGLocationTests;
-			productReference = 2280E0F51ABB47860026F13A /* THGLocationTests.xctest */;
+			name = ELLocationTests;
+			productName = ELLocationTests;
+			productReference = 2280E0F51ABB47860026F13A /* ELLocationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		2280E14F1ABB4BEC0026F13A /* THGLocationExample */ = {
+		2280E14F1ABB4BEC0026F13A /* ELLocationExample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2280E16E1ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "THGLocationExample" */;
+			buildConfigurationList = 2280E16E1ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "ELLocationExample" */;
 			buildPhases = (
 				2280E14C1ABB4BEC0026F13A /* Sources */,
 				2280E14D1ABB4BEC0026F13A /* Frameworks */,
@@ -328,14 +328,14 @@
 			dependencies = (
 				2280E1811ABB4D4B0026F13A /* PBXTargetDependency */,
 			);
-			name = THGLocationExample;
-			productName = THGLocationExample;
-			productReference = 2280E1501ABB4BEC0026F13A /* THGLocationExample.app */;
+			name = ELLocationExample;
+			productName = ELLocationExample;
+			productReference = 2280E1501ABB4BEC0026F13A /* ELLocationExample.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2280E1651ABB4BEC0026F13A /* THGLocationExampleTests */ = {
+		2280E1651ABB4BEC0026F13A /* ELLocationExampleTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2280E1711ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "THGLocationExampleTests" */;
+			buildConfigurationList = 2280E1711ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "ELLocationExampleTests" */;
 			buildPhases = (
 				2280E1621ABB4BEC0026F13A /* Sources */,
 				2280E1631ABB4BEC0026F13A /* Frameworks */,
@@ -346,9 +346,9 @@
 			dependencies = (
 				2280E1681ABB4BEC0026F13A /* PBXTargetDependency */,
 			);
-			name = THGLocationExampleTests;
-			productName = THGLocationExampleTests;
-			productReference = 2280E1661ABB4BEC0026F13A /* THGLocationExampleTests.xctest */;
+			name = ELLocationExampleTests;
+			productName = ELLocationExampleTests;
+			productReference = 2280E1661ABB4BEC0026F13A /* ELLocationExampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -360,7 +360,7 @@
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
-				ORGANIZATIONNAME = "Set Direction";
+				ORGANIZATIONNAME = "WalmartLabs";
 				TargetAttributes = {
 					2280E0E91ABB47860026F13A = {
 						CreatedOnToolsVersion = 6.3;
@@ -377,7 +377,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2280E0E41ABB47860026F13A /* Build configuration list for PBXProject "THGLocation" */;
+			buildConfigurationList = 2280E0E41ABB47860026F13A /* Build configuration list for PBXProject "ELLocation" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -391,45 +391,45 @@
 			projectReferences = (
 				{
 					ProductGroup = 220E9E921B8BDFB4000863F6 /* Products */;
-					ProjectRef = 220E9E911B8BDFB4000863F6 /* THGFoundation.xcodeproj */;
+					ProjectRef = 220E9E911B8BDFB4000863F6 /* ELFoundation.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
-				2280E0E91ABB47860026F13A /* THGLocation */,
-				2280E0F41ABB47860026F13A /* THGLocationTests */,
-				2280E14F1ABB4BEC0026F13A /* THGLocationExample */,
-				2280E1651ABB4BEC0026F13A /* THGLocationExampleTests */,
+				2280E0E91ABB47860026F13A /* ELLocation */,
+				2280E0F41ABB47860026F13A /* ELLocationTests */,
+				2280E14F1ABB4BEC0026F13A /* ELLocationExample */,
+				2280E1651ABB4BEC0026F13A /* ELLocationExampleTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		220E9E981B8BDFB4000863F6 /* THGFoundation.framework */ = {
+		220E9E981B8BDFB4000863F6 /* ELFoundation.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = THGFoundation.framework;
+			path = ELFoundation.framework;
 			remoteRef = 220E9E971B8BDFB4000863F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		220E9E9A1B8BDFB4000863F6 /* THGFoundationTests.xctest */ = {
+		220E9E9A1B8BDFB4000863F6 /* ELFoundationTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = THGFoundationTests.xctest;
+			path = ELFoundationTests.xctest;
 			remoteRef = 220E9E991B8BDFB4000863F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		220E9E9C1B8BDFB4000863F6 /* THGFoundation.framework */ = {
+		220E9E9C1B8BDFB4000863F6 /* ELFoundation.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = THGFoundation.framework;
+			path = ELFoundation.framework;
 			remoteRef = 220E9E9B1B8BDFB4000863F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		220E9EA31B8BE0A6000863F6 /* THGFoundation_osxTests.xctest */ = {
+		220E9EA31B8BE0A6000863F6 /* ELFoundation_osxTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = THGFoundation_osxTests.xctest;
+			path = ELFoundation_osxTests.xctest;
 			remoteRef = 220E9EA21B8BE0A6000863F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -482,7 +482,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E0FD1ABB47860026F13A /* THGLocationTests.swift in Sources */,
+				2280E0FD1ABB47860026F13A /* ELLocationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,7 +500,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E16D1ABB4BEC0026F13A /* THGLocationExampleTests.swift in Sources */,
+				2280E16D1ABB4BEC0026F13A /* ELLocationExampleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -509,17 +509,17 @@
 /* Begin PBXTargetDependency section */
 		2280E0F81ABB47860026F13A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2280E0E91ABB47860026F13A /* THGLocation */;
+			target = 2280E0E91ABB47860026F13A /* ELLocation */;
 			targetProxy = 2280E0F71ABB47860026F13A /* PBXContainerItemProxy */;
 		};
 		2280E1681ABB4BEC0026F13A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2280E14F1ABB4BEC0026F13A /* THGLocationExample */;
+			target = 2280E14F1ABB4BEC0026F13A /* ELLocationExample */;
 			targetProxy = 2280E1671ABB4BEC0026F13A /* PBXContainerItemProxy */;
 		};
 		2280E1811ABB4D4B0026F13A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2280E0E91ABB47860026F13A /* THGLocation */;
+			target = 2280E0E91ABB47860026F13A /* ELLocation */;
 			targetProxy = 2280E1801ABB4D4B0026F13A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -645,7 +645,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = THGLocation/Info.plist;
+				INFOPLIST_FILE = ELLocation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
@@ -665,7 +665,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = THGLocation/Info.plist;
+				INFOPLIST_FILE = ELLocation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
@@ -685,7 +685,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = THGLocationTests/Info.plist;
+				INFOPLIST_FILE = ELLocationTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -699,7 +699,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = THGLocationTests/Info.plist;
+				INFOPLIST_FILE = ELLocationTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -719,7 +719,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = THGLocationExample/Info.plist;
+				INFOPLIST_FILE = ELLocationExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -735,7 +735,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = THGLocationExample/Info.plist;
+				INFOPLIST_FILE = ELLocationExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -754,12 +754,12 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = THGLocationExampleTests/Info.plist;
+				INFOPLIST_FILE = ELLocationExampleTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/THGLocationExample.app/THGLocationExample";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ELLocationExample.app/ELLocationExample";
 			};
 			name = Debug;
 		};
@@ -771,19 +771,19 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = THGLocationExampleTests/Info.plist;
+				INFOPLIST_FILE = ELLocationExampleTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.setdirection.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/THGLocationExample.app/THGLocationExample";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ELLocationExample.app/ELLocationExample";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2280E0E41ABB47860026F13A /* Build configuration list for PBXProject "THGLocation" */ = {
+		2280E0E41ABB47860026F13A /* Build configuration list for PBXProject "ELLocation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2280E0FE1ABB47860026F13A /* Debug */,
@@ -792,7 +792,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2280E1001ABB47860026F13A /* Build configuration list for PBXNativeTarget "THGLocation" */ = {
+		2280E1001ABB47860026F13A /* Build configuration list for PBXNativeTarget "ELLocation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2280E1011ABB47860026F13A /* Debug */,
@@ -801,7 +801,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2280E1031ABB47860026F13A /* Build configuration list for PBXNativeTarget "THGLocationTests" */ = {
+		2280E1031ABB47860026F13A /* Build configuration list for PBXNativeTarget "ELLocationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2280E1041ABB47860026F13A /* Debug */,
@@ -810,7 +810,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2280E16E1ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "THGLocationExample" */ = {
+		2280E16E1ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "ELLocationExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2280E16F1ABB4BEC0026F13A /* Debug */,
@@ -819,7 +819,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2280E1711ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "THGLocationExampleTests" */ = {
+		2280E1711ABB4BEC0026F13A /* Build configuration list for PBXNativeTarget "ELLocationExampleTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2280E1721ABB4BEC0026F13A /* Debug */,

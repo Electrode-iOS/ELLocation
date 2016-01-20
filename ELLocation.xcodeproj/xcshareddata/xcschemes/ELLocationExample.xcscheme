@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2280E14F1ABB4BEC0026F13A"
-               BuildableName = "THGLocationExample.app"
-               BlueprintName = "THGLocationExample"
-               ReferencedContainer = "container:THGLocation.xcodeproj">
+               BuildableName = "ELLocationExample.app"
+               BlueprintName = "ELLocationExample"
+               ReferencedContainer = "container:ELLocation.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2280E1651ABB4BEC0026F13A"
-               BuildableName = "THGLocationExampleTests.xctest"
-               BlueprintName = "THGLocationExampleTests"
-               ReferencedContainer = "container:THGLocation.xcodeproj">
+               BuildableName = "ELLocationExampleTests.xctest"
+               BlueprintName = "ELLocationExampleTests"
+               ReferencedContainer = "container:ELLocation.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2280E1651ABB4BEC0026F13A"
-               BuildableName = "THGLocationExampleTests.xctest"
-               BlueprintName = "THGLocationExampleTests"
-               ReferencedContainer = "container:THGLocation.xcodeproj">
+               BuildableName = "ELLocationExampleTests.xctest"
+               BlueprintName = "ELLocationExampleTests"
+               ReferencedContainer = "container:ELLocation.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +57,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2280E14F1ABB4BEC0026F13A"
-            BuildableName = "THGLocationExample.app"
-            BlueprintName = "THGLocationExample"
-            ReferencedContainer = "container:THGLocation.xcodeproj">
+            BuildableName = "ELLocationExample.app"
+            BlueprintName = "ELLocationExample"
+            ReferencedContainer = "container:ELLocation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -80,9 +80,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2280E14F1ABB4BEC0026F13A"
-            BuildableName = "THGLocationExample.app"
-            BlueprintName = "THGLocationExample"
-            ReferencedContainer = "container:THGLocation.xcodeproj">
+            BuildableName = "ELLocationExample.app"
+            BlueprintName = "ELLocationExample"
+            ReferencedContainer = "container:ELLocation.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -99,9 +99,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2280E14F1ABB4BEC0026F13A"
-            BuildableName = "THGLocationExample.app"
-            BlueprintName = "THGLocationExample"
-            ReferencedContainer = "container:THGLocation.xcodeproj">
+            BuildableName = "ELLocationExample.app"
+            BlueprintName = "ELLocationExample"
+            ReferencedContainer = "container:ELLocation.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

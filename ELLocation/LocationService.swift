@@ -3,17 +3,17 @@
 //  LocationLocation
 //
 //  Created by Sam Grover on 3/3/15.
-//  Copyright (c) 2015 Set Direction. All rights reserved.
+//  Copyright (c) 2015 WalmartLabs. All rights reserved.
 //
 
 import Foundation
 import CoreLocation
 
-import THGFoundation
+import ELFoundation
 
-let THGLocationErrorDomain: String = "THGLocationErrorDomain"
+let ELLocationErrorDomain: String = "ELLocationErrorDomain"
 
-public enum THGLocationError: Int, NSErrorEnum {
+public enum ELLocationError: Int, NSErrorEnum {
     /// The user has denied access to location services or their device has been configured to restrict it.
     case AuthorizationDeniedOrRestricted
     /// The caller is asking for authorization 'always' but user has granted 'when in use'.
@@ -24,7 +24,7 @@ public enum THGLocationError: Int, NSErrorEnum {
     case LocationServicesDisabled
     
     public var domain: String {
-        return "io.theholygrail.THGLocationError"
+        return "io.theholygrail.ELLocationError"
     }
     
     public var errorDescription: String {
@@ -86,7 +86,7 @@ public struct LocationAuthorizationService: LocationAuthorizationProvider {
     Request the specified authorization.
     
     - parameter authorization: The authorization being requested.
-    - returns: An optional error that could happen when requesting authorization. See `THGLocationError`.
+    - returns: An optional error that could happen when requesting authorization. See `ELLocationError`.
     */
     public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
         return locationAuthorizationProvider.requestAuthorization(authorization)
@@ -148,7 +148,7 @@ public struct LocationUpdateService: LocationUpdateProvider {
     
     - parameter listener: The listener to register.
     - parameter request: The parameters of the request.
-    - returns: An optional error that could happen when registering. See `THGLocationError`.
+    - returns: An optional error that could happen when registering. See `ELLocationError`.
     */
     public func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
         return locationProvider.registerListener(listener, request: request)
@@ -170,7 +170,7 @@ public struct LocationUpdateService: LocationUpdateProvider {
 
 /**
 This is the internal class that is set up as a singleton that interfaces with `CLLocationManager` and adopts
-the protocols that define `THGLocation` services in the public API.
+the protocols that define `ELLocation` services in the public API.
 */
 class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationProvider, CLLocationManagerDelegate {
     static let shared: LocationManager = LocationManager()
@@ -258,16 +258,16 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         self.authorization = authorization
         switch authStatus {
         case .Denied, .Restricted:
-            return NSError(THGLocationError.AuthorizationDeniedOrRestricted)
+            return NSError(ELLocationError.AuthorizationDeniedOrRestricted)
         case .NotDetermined:
             requestAuth = true
         case .AuthorizedAlways:
             if authorization != .Always {
-                return NSError(THGLocationError.AuthorizationAlways)
+                return NSError(ELLocationError.AuthorizationAlways)
             }
         case .AuthorizedWhenInUse:
             if authorization != .WhenInUse {
-                return NSError(THGLocationError.AuthorizationWhenInUse)
+                return NSError(ELLocationError.AuthorizationWhenInUse)
             }
         }
         
@@ -308,7 +308,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         if CLLocationManager.locationServicesEnabled() {
             return nil
         } else {
-            return NSError(THGLocationError.LocationServicesDisabled)
+            return NSError(ELLocationError.LocationServicesDisabled)
         }
     }
     
