@@ -177,7 +177,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     // MARK: Properties, initializers and internal structures
     
-    private var manager: CLLocationManager
+    var manager: CLLocationManager
     private var allLocationListeners: [LocationListener]
     private var accuracy: LocationAccuracy
     private var authorization: LocationAuthorization
@@ -286,8 +286,10 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     private func startMonitoringLocation() {
         if shouldUseSignificantUpdateService() {
             manager.startMonitoringSignificantLocationChanges()
+            manager.stopUpdatingLocation()
         } else {
             manager.startUpdatingLocation()
+            manager.stopMonitoringSignificantLocationChanges()
         }
     }
     
@@ -338,7 +340,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
     
     private func calculateAndUpdateAccuracy() {
-        var computedAccuracy: LocationAccuracy = accuracy
+        var computedAccuracy = accuracy
         
         // Map location listeners to get an array of accuracy raw values
         let accuracyRawValues = allLocationListeners.map({ (aLocationListener: LocationListener) -> Int in
@@ -358,15 +360,20 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         if accuracy != computedAccuracy {
             accuracy = computedAccuracy
             
+            // Use a distance filter to ignore unnecessary updates so the app can sleep more often
             switch accuracy {
             case .Coarse:
                 manager.desiredAccuracy = kCLLocationAccuracyKilometer
+                manager.distanceFilter = 500
             case .Good:
                 manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+                manager.distanceFilter = 50
             case .Better:
                 manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+                manager.distanceFilter = 5
             case .Best:
                 manager.desiredAccuracy = kCLLocationAccuracyBest
+                manager.distanceFilter = 2
             }
         }
     }
