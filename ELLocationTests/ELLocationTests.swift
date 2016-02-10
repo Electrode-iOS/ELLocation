@@ -30,4 +30,22 @@ class ELLocationTests: XCTestCase {
         // no crash here is a test success
         LocationManager.shared.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
     }
+    
+    func testDistanceFilterShouldChangeWithAccuracy() {
+        let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
+        
+        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, kCLDistanceFilterNone)
+        
+        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
+        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 500)
+        
+        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
+        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 50)
+        
+        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
+        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 5)
+        
+        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
+        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 2)
+    }
 }

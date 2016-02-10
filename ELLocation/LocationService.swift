@@ -177,7 +177,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     // MARK: Properties, initializers and internal structures
     
-    private var manager: CLLocationManager
+    var manager: CLLocationManager
     private var allLocationListeners: [LocationListener]
     private var accuracy: LocationAccuracy
     private var authorization: LocationAuthorization
@@ -286,8 +286,10 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     private func startMonitoringLocation() {
         if shouldUseSignificantUpdateService() {
             manager.startMonitoringSignificantLocationChanges()
+            manager.stopUpdatingLocation()
         } else {
             manager.startUpdatingLocation()
+            manager.stopMonitoringSignificantLocationChanges()
         }
     }
     
@@ -338,7 +340,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
     
     private func calculateAndUpdateAccuracy() {
-        var computedAccuracy: LocationAccuracy = accuracy
+        var computedAccuracy = accuracy
         
         // Map location listeners to get an array of accuracy raw values
         let accuracyRawValues = allLocationListeners.map({ (aLocationListener: LocationListener) -> Int in
@@ -368,6 +370,14 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             case .Best:
                 manager.desiredAccuracy = kCLLocationAccuracyBest
             }
+            
+            // Use a distance filter to ignore unnecessary updates so the app can sleep more often
+            // NOTE: A distance filter of half the accuracy allows some updates while the device is
+            //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
+            //       while the device is moving (so previous inaccuracies can be corrected). A minimum
+            //       of two meters is good for best accuracy, which evaluates to zero but typically
+            //       generates updates with an accuracy of ±5m in practice.
+            manager.distanceFilter = max(2, manager.desiredAccuracy / 2)
         }
     }
     
