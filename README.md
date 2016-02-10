@@ -1,4 +1,4 @@
-# ELLocation [![Build Status](https://travis-ci.org/TheHolyGrail/ELLocation.svg)](https://travis-ci.org/TheHolyGrail/ELLocation)
+# ELLocation [![Build Status](https://travis-ci.org/Electrode-iOS/ELLocation.svg)](https://travis-ci.org/Electrode-iOS/ELLocation)
 
 ELLocation provides the `ELLocation` module.
 
