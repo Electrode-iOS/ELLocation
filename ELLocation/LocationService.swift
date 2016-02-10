@@ -360,21 +360,24 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         if accuracy != computedAccuracy {
             accuracy = computedAccuracy
             
-            // Use a distance filter to ignore unnecessary updates so the app can sleep more often
             switch accuracy {
             case .Coarse:
                 manager.desiredAccuracy = kCLLocationAccuracyKilometer
-                manager.distanceFilter = 500
             case .Good:
                 manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-                manager.distanceFilter = 50
             case .Better:
                 manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-                manager.distanceFilter = 5
             case .Best:
                 manager.desiredAccuracy = kCLLocationAccuracyBest
-                manager.distanceFilter = 2
             }
+            
+            // Use a distance filter to ignore unnecessary updates so the app can sleep more often
+            // NOTE: A distance filter of half the accuracy allows some updates while the device is
+            //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
+            //       while the device is moving (so previous inaccuracies can be corrected). A minimum
+            //       of two meters is good for best accuracy, which evaluates to zero but typically
+            //       generates updates with an accuracy of ±5m in practice.
+            manager.distanceFilter = max(2, manager.desiredAccuracy / 2)
         }
     }
     
