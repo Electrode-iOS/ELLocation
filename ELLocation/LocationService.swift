@@ -447,7 +447,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
                     manager.stopUpdatingLocation()
                 case .Standard:
                     manager.startUpdatingLocation()
-                    manager.stopUpdatingLocation()
+                    manager.stopMonitoringSignificantLocationChanges()
                 }
             }
         }
