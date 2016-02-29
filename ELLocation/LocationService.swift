@@ -71,6 +71,69 @@ public enum LocationAuthorization {
     case Always
 }
 
+/**
+ There are two kinds of location monitoring in iOS: significant updates and standard location monitoring.
+ Significant updates are more power efficient, but have limitations on accuracy and update frequency.
+ */
+private enum LocationMonitoring {
+    /// Monitor for only "significant updates" to the user's location (using cell towers only)
+    case SignificantUpdates
+    /// Monitor for all updates to the user's location (using GPS, WiFi, etc)
+    case Standard
+}
+
+private extension LocationAccuracy {
+    /**
+     Whether acheiving this accuracy value requires standard monitoring.
+
+     Significant updates relies on entirely on cell towers and therefore have low accuracy. They are
+     only suitable for Coarse accuracy.
+     */
+    var requiresStandardMonitoring: Bool {
+        switch self {
+        case .Good, .Better, .Best:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+private extension LocationUpdateFrequency {
+    /**
+     Whether acheiving this update frequency value requires standard monitoring.
+
+     Significant updates fire infrequently (if at all). Then are not suitable for continuous updates.
+     */
+    var requiresStandardMonitoring: Bool {
+        switch self {
+        case .Continuous:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+private extension CLAuthorizationStatus {
+    /**
+     Whether this authorization status requires standard monitoring.
+
+     Significant updates require authorization to access the user's location when the app is not in
+     use (i.e. "Always" authorization).
+
+     TODO: Is this true?
+     */
+    var requiresStandardMonitoring: Bool {
+        switch self {
+        case .AuthorizedWhenInUse:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 // MARK: Location Authorization API
 
 // An internal protocol for a type that wants to provide location authorization.
@@ -179,14 +242,87 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     var manager: CLLocationManager
     private var allLocationListeners: [LocationListener]
-    private var accuracy: LocationAccuracy
-    private var authorization: LocationAuthorization
-    
+
+    /// The current Core Location authorization status
+    private var authorizationStatus: CLAuthorizationStatus {
+        return CLLocationManager.authorizationStatus()
+    }
+
+    /// The accuracy, based on the current set of listener requests.
+    private var accuracy: LocationAccuracy {
+        let allAccuracies = allLocationListeners.map({ $0.request.accuracy })
+
+        guard let value = allAccuracies.maxElement({ $0.rawValue < $1.rawValue }) else {
+            return .Good
+        }
+
+        return value
+    }
+
+    /// The update frequency, based on the current set of listener requests.
+    private var updateFrequency: LocationUpdateFrequency {
+        let allUpdateFrequencies = allLocationListeners.map({ $0.request.updateFrequency })
+
+        guard let value = allUpdateFrequencies.maxElement({ $0.rawValue < $1.rawValue }) else {
+            return .ChangesOnly
+        }
+
+        return value
+    }
+
+    /// The monitoring mode for the current state.
+    private var monitoring: LocationMonitoring? {
+        guard !allLocationListeners.isEmpty else {
+            return nil
+        }
+
+        if authorizationStatus.requiresStandardMonitoring {
+            return .Standard
+        }
+
+        if accuracy.requiresStandardMonitoring {
+            return .Standard
+        }
+
+        if updateFrequency.requiresStandardMonitoring {
+            return .Standard
+        }
+
+        return .SignificantUpdates
+    }
+
+    /// The underlying location manager's desired accuracy for the current state.
+    private var coreLocationDesiredAccuracy: CLLocationAccuracy {
+        switch accuracy {
+        case .Coarse:
+            return kCLLocationAccuracyKilometer
+        case .Good:
+            return kCLLocationAccuracyHundredMeters
+        case .Better:
+            return kCLLocationAccuracyNearestTenMeters
+        case .Best:
+            return kCLLocationAccuracyBest
+        }
+    }
+
+    /// The underlying location manager's desired distance filter for the current state.
+    private var coreLocationDistanceFilter: CLLocationDistance {
+        // NOTE: A distance filter of half the accuracy allows some updates while the device is
+        //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
+        //       while the device is moving (so previous inaccuracies can be corrected).
+        switch accuracy {
+        case .Best:
+            // Two meters is good for best accuracy, which evaluates to -1.0 but typically generates
+            // updates with an accuracy of ±5m in practice.
+            return 2.0
+        default:
+            return coreLocationDesiredAccuracy / 2
+        }
+    }
+
     override init() {
         manager = CLLocationManager()
         allLocationListeners = [LocationListener]()
-        accuracy = .Good
-        authorization = .WhenInUse
         super.init()
         manager.delegate = self
     }
@@ -233,17 +369,23 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         synchronized(self, closure: { () -> Void in
             self.allLocationListeners.append(locationListener)
         })
-        
-        calculateAndUpdateAccuracy()
-        startMonitoringLocation()
-        
+
+        updateLocationMonitoring()
+
         return nil
     }
     
     func deregisterListener(listener: AnyObject) {
-        if let theIndex = indexOfLocationListenerForListener(listener) {
-            removeLocationListenerAtIndex(theIndex)
+        synchronized(self) {
+            for (index, locationListener) in self.allLocationListeners.enumerate() {
+                if locationListener.listener === listener {
+                    self.allLocationListeners.removeAtIndex(index)
+                    break
+                }
+            }
         }
+
+        updateLocationMonitoring()
     }
     
     // MARK: LocationAuthorizationProvider
@@ -252,11 +394,10 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         if let locationServicesError = checkIfLocationServicesEnabled() {
             return locationServicesError
         }
-        
-        let authStatus = CLLocationManager.authorizationStatus()
+
         var requestAuth = false
-        self.authorization = authorization
-        switch authStatus {
+
+        switch authorizationStatus {
         case .Denied, .Restricted:
             return NSError(ELLocationError.AuthorizationDeniedOrRestricted)
         case .NotDetermined:
@@ -272,38 +413,44 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
         
         if requestAuth {
-            switch self.authorization {
+            switch authorization {
             case .Always:
                 manager.requestAlwaysAuthorization()
             case .WhenInUse:
                 manager.requestWhenInUseAuthorization()
             }
         }
+
         return nil
     }
     
     // MARK: Internal Interface
-    private func startMonitoringLocation() {
-        if shouldUseSignificantUpdateService() {
-            manager.startMonitoringSignificantLocationChanges()
-            manager.stopUpdatingLocation()
-        } else {
-            manager.startUpdatingLocation()
-            manager.stopMonitoringSignificantLocationChanges()
+
+    private func updateLocationMonitoring() {
+        synchronized(self) {
+            let manager = self.manager
+
+            manager.desiredAccuracy = self.coreLocationDesiredAccuracy
+
+            // Use a distance filter to ignore unnecessary updates so the app can sleep more often
+            manager.distanceFilter = self.coreLocationDistanceFilter
+
+            let monitoring = self.monitoring
+
+            if monitoring == .None {
+                manager.stopUpdatingLocation()
+                manager.stopMonitoringSignificantLocationChanges()
+            } else {
+                switch monitoring! {
+                case .SignificantUpdates:
+                    manager.startMonitoringSignificantLocationChanges()
+                    manager.stopUpdatingLocation()
+                case .Standard:
+                    manager.startUpdatingLocation()
+                    manager.stopUpdatingLocation()
+                }
+            }
         }
-    }
-    
-    /**
-     * There are two kinds of location monitoring in iOS: significant updates and standard location monitoring.
-     * Significant updates rely entirely on cell towers and therefore have low accuracy and low power consumption.
-     * They also fire infrequently. If the user has requested location accuracy higher than .Coarse or wants
-     * continuous updates, the significant location service is inappropriate to use. Finally, the user must have
-     * requested .Always authorization status
-     */
-    private func shouldUseSignificantUpdateService() -> Bool {
-        let hasContinuousListeners = allLocationListeners.filter({$0.request.updateFrequency == .Continuous}).count > 0
-        let isAccuracyCoarseEnough = accuracy.rawValue <= LocationAccuracy.Coarse.rawValue
-        return !hasContinuousListeners && isAccuracyCoarseEnough && authorization == .Always
     }
 
     private func checkIfLocationServicesEnabled() -> NSError? {
@@ -313,140 +460,67 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             return NSError(ELLocationError.LocationServicesDisabled)
         }
     }
-    
-    private func indexOfLocationListenerForListener(listener: AnyObject) -> Int? {
-        var indexOfLocationListener: Int? = nil
-        for (theIndex, aLocationListener) in self.allLocationListeners.enumerate() {
-            if let actualListener: AnyObject = aLocationListener.listener {
-                if actualListener === listener {
-                    indexOfLocationListener = theIndex
-                    break
-                }
+
+    /// Searches for listeners that have been deallocated and removes them from the list.
+    private func cleanUpLocationListeners() {
+        var foundZombies = false
+
+        synchronized(self) {
+            let locationListeners = self.allLocationListeners
+
+            for (index, locationListener) in locationListeners.enumerate() where locationListener.listener == nil {
+                self.allLocationListeners.removeAtIndex(index)
+                foundZombies = true
             }
         }
-        return indexOfLocationListener
-    }
-    
-    private func removeLocationListenerAtIndex(theIndex: Int) {
-        synchronized(self, closure: { () -> Void in
-            self.allLocationListeners.removeAtIndex(theIndex)
-            if self.allLocationListeners.count == 0 {
-                self.manager.stopUpdatingLocation()
-                self.manager.stopMonitoringSignificantLocationChanges()
-            }
-        })
-        
-        calculateAndUpdateAccuracy()
-    }
-    
-    private func calculateAndUpdateAccuracy() {
-        var computedAccuracy = accuracy
-        
-        // Map location listeners to get an array of accuracy raw values
-        let accuracyRawValues = allLocationListeners.map({ (aLocationListener: LocationListener) -> Int in
-            return aLocationListener.request.accuracy.rawValue
-        })
-        
-        // Find the max in the mapped array
-        guard let maxAccuracy = accuracyRawValues.maxElement() else {
-            return
-        }
-        
-        if let locationAccuracy = LocationAccuracy(rawValue: maxAccuracy) {
-            computedAccuracy = locationAccuracy
-        }
-        
-        // Update if necessary
-        if accuracy != computedAccuracy {
-            accuracy = computedAccuracy
-            
-            switch accuracy {
-            case .Coarse:
-                manager.desiredAccuracy = kCLLocationAccuracyKilometer
-            case .Good:
-                manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-            case .Better:
-                manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-            case .Best:
-                manager.desiredAccuracy = kCLLocationAccuracyBest
-            }
-            
-            // Use a distance filter to ignore unnecessary updates so the app can sleep more often
-            // NOTE: A distance filter of half the accuracy allows some updates while the device is
-            //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
-            //       while the device is moving (so previous inaccuracies can be corrected). A minimum
-            //       of two meters is good for best accuracy, which evaluates to zero but typically
-            //       generates updates with an accuracy of ±5m in practice.
-            manager.distanceFilter = max(2, manager.desiredAccuracy / 2)
+
+        if foundZombies {
+            updateLocationMonitoring()
         }
     }
-    
-    private func cleanupLocationListeners(locationListenersToRemove: [LocationListener]) {
-        // Run cleanup. This is currently brute force.
-        synchronized(self, closure: { () -> Void in
-            for aLocationListenerToRemove in locationListenersToRemove {
-                var theIndexToRemove: Int? = nil
-                
-                for (theIndex, locationListener) in self.allLocationListeners.enumerate() {
-                    if aLocationListenerToRemove === locationListener {
-                        theIndexToRemove = theIndex
-                        break
-                    }
-                }
-                
-                if let theIndex = theIndexToRemove {
-                    self.allLocationListeners.removeAtIndex(theIndex)
-                }
-            }
-        })
-        calculateAndUpdateAccuracy()
-    }
-    
+
     // MARK: CLLocationManagerDelegate
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let mostRecentLocation = locations.last as CLLocation! {
-            var locationListenersToRemove = [LocationListener]()
-            
-            synchronized(self, closure: { () -> Void in
-                for locationListener in self.allLocationListeners {
-                    if locationListener.listener != nil {
-                        if locationListener.shouldUpdateListenerForLocation(mostRecentLocation) {
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                locationListener.previousCallbackLocation = mostRecentLocation
-                                locationListener.request.response(success: true, location: mostRecentLocation, error: nil)
-                            })
-                        }
-                    } else {
-                        locationListenersToRemove.append(locationListener)
-                    }
-                }
-            })
-            
-            cleanupLocationListeners(locationListenersToRemove)
+        guard let mostRecentLocation = locations.last as CLLocation! else {
+            return
         }
-    }
-    
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        synchronized(self, closure: { () -> Void in
-            for locationListener in self.allLocationListeners {
-                if locationListener.listener != nil {
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        locationListener.request.response(success: false, location: nil, error: error)
+
+        synchronized(self) {
+            let locationListeners = self.allLocationListeners
+
+            for locationListener in locationListeners where locationListener.listener != nil {
+                // FIXME: previousCallbackLocation is assigned in the async block, but it is
+                // used in shouleUpdateListener() which creates a race condition.
+                if locationListener.shouldUpdateListenerForLocation(mostRecentLocation) {
+                    // Is it weird that the `response` handler can still receive callbacks even after the listener
+                    // has been unregistered? I think that could happen with this design.
+                    dispatch_async(dispatch_get_main_queue(), {
+                        locationListener.previousCallbackLocation = mostRecentLocation
+                        locationListener.request.response(success: true, location: mostRecentLocation, error: nil)
                     })
                 }
             }
-        })
+        }
+
+        cleanUpLocationListeners()
+    }
+    
+    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+        synchronized(self) {
+            let locationListeners = self.allLocationListeners
+
+            for locationListener in locationListeners where locationListener.listener != nil {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    locationListener.request.response(success: false, location: nil, error: error)
+                })
+            }
+        }
+
+        cleanUpLocationListeners()
     }
     
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if status == .Denied || status == .Restricted {
-            manager.stopUpdatingLocation()
-        }
-        
-        if status == .AuthorizedWhenInUse || status == .AuthorizedAlways {
-            startMonitoringLocation()
-        }
+        updateLocationMonitoring()
     }
 }
-
