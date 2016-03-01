@@ -228,6 +228,85 @@ class ELLocationTests: XCTestCase {
         }
     }
     
+    // MARK: Location Updates
+
+    func testLocationMonitoring() {
+        // Monitoring is dependent on the authorization status, accuracy and update frequency. These nested for loops
+        // allow the test to cover all possible combinations.
+
+        for authorizationStatus: CLAuthorizationStatus in [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways] {
+            for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
+                for updateFrequency: LocationUpdateFrequency in [.ChangesOnly, .Continuous] {
+                    testLocationMonitoring(authorizationStatus: authorizationStatus, accuracy: accuracy, updateFrequency: updateFrequency)
+                }
+            }
+        }
+    }
+
+    func testLocationMonitoring(authorizationStatus authorizationStatus: CLAuthorizationStatus, accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency) {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+
+        var expectGPS: Bool
+        var expectCellular: Bool
+
+        switch (authorizationStatus, accuracy, updateFrequency) {
+        case (.NotDetermined, _, _), (.Denied, _, _), (.Restricted, _, _):
+            // Any form of not-yet-authorized prevents any monitoring:
+            expectGPS = false
+            expectCellular = false
+        case (.AuthorizedAlways, .Coarse, .ChangesOnly):
+            // For (only) this specific combination, we should get Cellular tracking:
+            expectGPS = false
+            expectCellular = true
+        default:
+            // Otherwise, we should get GPS tracking:
+            expectGPS = true
+            expectCellular = false
+        }
+
+        // Set the auth status, add a listener and see what happens:
+
+        manager.withAuthorizationStatus(authorizationStatus) {
+            // Without any listeners, the monitoring should be off:
+            XCTAssertFalse(manager.updatingLocation, "No listeners means no GPS tracking")
+            XCTAssertFalse(manager.monitoringSignificantLocationChanges, "No listeners means no Cellular tracking")
+
+            subject.withListener(accuracy: accuracy, updateFrequency: updateFrequency) {
+                if expectGPS {
+                    XCTAssertTrue(manager.updatingLocation, "\(accuracy)/\(updateFrequency) listener triggers GPS tracking")
+                } else {
+                    XCTAssertFalse(manager.updatingLocation, "\(accuracy)/\(updateFrequency) listener does not trigger GPS tracking")
+                }
+
+                if expectCellular {
+                    XCTAssertTrue(manager.monitoringSignificantLocationChanges, "\(accuracy)/\(updateFrequency) listener triggers Cellular tracking")
+                } else {
+                    XCTAssertFalse(manager.monitoringSignificantLocationChanges, "\(accuracy)/\(updateFrequency) listener does not trigger Cellular tracking")
+                }
+            }
+        }
+    }
+
+    func testLocationMonitoringWithMultipleListeners() {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+
+        XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
+
+        subject.withListener(accuracy: .Good, updateFrequency: .Continuous) {
+            XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
+
+            subject.withListener(accuracy: .Good, updateFrequency: .Continuous) {
+                XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
+            }
+
+            XCTAssertTrue(manager.updatingLocation, "Removing second listener does not stop location updates")
+        }
+
+        XCTAssertFalse(manager.updatingLocation, "Removing all listeners stop location updates")
+    }
+    
     // MARK: Distance filter
 
     func testDistanceFilterShouldChangeWithAccuracy() {
