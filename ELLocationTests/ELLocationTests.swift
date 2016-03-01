@@ -40,14 +40,18 @@ class ELLocationTests: XCTestCase {
         
         subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
         XCTAssertEqual(subject.manager.distanceFilter, 500)
+        subject.deregisterListener(self)
         
         subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
         XCTAssertEqual(subject.manager.distanceFilter, 50)
+        subject.deregisterListener(self)
         
         subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
         XCTAssertEqual(subject.manager.distanceFilter, 5)
+        subject.deregisterListener(self)
         
         subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
         XCTAssertEqual(subject.manager.distanceFilter, 2)
+        subject.deregisterListener(self)
     }
 }
