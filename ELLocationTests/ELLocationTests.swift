@@ -23,6 +23,26 @@ class ELLocationTests: XCTestCase {
         super.tearDown()
     }
     
+    private func deliverLocationUpdate(subject: LocationManager, latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: latitude, longitude: longitude)])
+    }
+    
+    func testAddListener() {
+        let subject = LocationManager()
+        let listener = NSObject()
+
+        let responseReceived = expectationWithDescription("response received")
+        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
+            responseReceived.fulfill()
+        }
+
+        subject.registerListener(listener, request:request)
+        
+        deliverLocationUpdate(subject, latitude: 42, longitude: 42)
+        
+        waitForExpectationsWithTimeout(1.0, handler: nil)
+    }
+    
     func testCalculateAndUpdateAccuracyCrash() {
         LocationAuthorizationService().requestAuthorization(.WhenInUse)
         LocationAuthorizationService().requestAuthorization(.Always)
@@ -33,19 +53,47 @@ class ELLocationTests: XCTestCase {
     
     func testDistanceFilterShouldChangeWithAccuracy() {
         let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
+        let subject = LocationManager()
         
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, kCLDistanceFilterNone)
+        // Note: behavior with no listeners is not defined.
+
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 500)
+        subject.deregisterListener(self)
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 500)
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 50)
+        subject.deregisterListener(self)
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 50)
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 5)
+        subject.deregisterListener(self)
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 5)
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 2)
+        subject.deregisterListener(self)
+    }
+    
+    func testDesiredAccuracyShouldChangeWithAccuracy() {
+        let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
+        let subject = LocationManager()
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 2)
+        // Note: behavior with no listeners is not defined.
+
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyKilometer)
+        subject.deregisterListener(self)
+        
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
+        subject.deregisterListener(self)
+        
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
+        subject.deregisterListener(self)
+        
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyBest)
+        subject.deregisterListener(self)
     }
 }
