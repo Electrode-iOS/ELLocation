@@ -345,7 +345,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
     }
 
-    /// The underlying location manager's desired distance filter for the current state.
+    /// The underlying location manager's distance filter for the current state.
     private var coreLocationDistanceFilter: CLLocationDistance {
         // NOTE: A distance filter of half the accuracy allows some updates while the device is
         //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
