@@ -34,18 +34,20 @@ class ELLocationTests: XCTestCase {
     func testDistanceFilterShouldChangeWithAccuracy() {
         let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
         
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, kCLDistanceFilterNone)
+        let subject = LocationManager()
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 500)
+        XCTAssertEqual(subject.manager.distanceFilter, kCLDistanceFilterNone)
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 50)
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 500)
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 5)
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 50)
         
-        LocationManager.shared.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
-        XCTAssertEqual(LocationManager.shared.manager.distanceFilter, 2)
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 5)
+        
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
+        XCTAssertEqual(subject.manager.distanceFilter, 2)
     }
 }
