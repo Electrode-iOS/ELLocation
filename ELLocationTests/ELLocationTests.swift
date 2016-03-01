@@ -53,4 +53,27 @@ class ELLocationTests: XCTestCase {
         XCTAssertEqual(subject.manager.distanceFilter, 2)
         subject.deregisterListener(self)
     }
+    
+    func testDesiredAccuracyShouldChangeWithAccuracy() {
+        let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
+        let subject = LocationManager()
+        
+        // Note: behavior with no listeners is not defined.
+
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyKilometer)
+        subject.deregisterListener(self)
+        
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
+        subject.deregisterListener(self)
+        
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
+        subject.deregisterListener(self)
+        
+        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
+        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyBest)
+        subject.deregisterListener(self)
+    }
 }
