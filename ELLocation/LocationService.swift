@@ -426,9 +426,9 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         
         let locationListener = LocationListener(listener: listener, request: request)
         
-        synchronized(self, closure: { () -> Void in
+        synchronized(self) {
             self.allLocationListeners.append(locationListener)
-        })
+        }
 
         updateLocationMonitoring()
 
