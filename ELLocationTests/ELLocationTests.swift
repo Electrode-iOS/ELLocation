@@ -23,6 +23,26 @@ class ELLocationTests: XCTestCase {
         super.tearDown()
     }
     
+    private func deliverLocationUpdate(subject: LocationManager, latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: latitude, longitude: longitude)])
+    }
+    
+    func testAddListener() {
+        let subject = LocationManager()
+        let listener = NSObject()
+
+        let responseReceived = expectationWithDescription("response received")
+        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
+            responseReceived.fulfill()
+        }
+
+        subject.registerListener(listener, request:request)
+        
+        deliverLocationUpdate(subject, latitude: 42, longitude: 42)
+        
+        waitForExpectationsWithTimeout(1.0, handler: nil)
+    }
+    
     func testCalculateAndUpdateAccuracyCrash() {
         LocationAuthorizationService().requestAuthorization(.WhenInUse)
         LocationAuthorizationService().requestAuthorization(.Always)
