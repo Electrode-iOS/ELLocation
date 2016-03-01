@@ -124,6 +124,72 @@ class ELLocationTests: XCTestCase {
 
     // MARK: Listeners
     
+    func testAddListenerPreconditions() {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+        let listener = NSObject()
+        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in }
+        
+        manager.withServicesEnabled(false) {
+            let error1 = subject.registerListener(listener, request: request)
+            XCTAssertNotNil(error1, "Register returns error when location services are disabled")
+        }
+
+        manager.withServicesEnabled(true) {
+            let error2 = subject.registerListener(listener, request: request)
+            XCTAssertNil(error2, "Register does not return error when location services are enabled")
+        }
+    }
+    
+    func testAddAndRemoveListener() {
+        // FIXME: The async testing is tightly coupled to the internal implementation (relying on use
+        // of `dispatch_async` for listener callbacks), but I don't know a better way.
+        // -- @nonsensery
+
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+        let listener = NSObject()
+        
+        let done = expectationWithDescription("test finished")
+
+        var responseReceived = false
+        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
+            responseReceived = true
+        }
+
+        // Add listener:
+        subject.registerListener(listener, request:request)
+        
+        // Update location:
+        deliverLocationUpdate(subject, latitude: 42, longitude: -16)
+
+        // Wait...
+        dispatch_async(dispatch_get_main_queue()) {
+            // Verify that callback was received:
+            XCTAssertTrue(responseReceived, "Registered listener receives callback")
+            
+            // Reset the flag:
+            responseReceived = false
+            
+            // Remove listener:
+            subject.deregisterListener(listener)
+            
+            // Update location:
+            self.deliverLocationUpdate(subject, latitude: 143, longitude: 85)
+            
+            // Wait...
+            dispatch_async(dispatch_get_main_queue()) {
+                // Verify that callback was NOT received:
+                XCTAssertFalse(responseReceived, "Deregistered listener no longer receives callback")
+                
+                // Done
+                done.fulfill()
+            }
+        }
+        
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+    }
+    
     // MARK: Distance filter
 
     func testDistanceFilterShouldChangeWithAccuracy() {
