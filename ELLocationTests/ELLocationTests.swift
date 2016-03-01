@@ -174,6 +174,60 @@ class ELLocationTests: XCTestCase {
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
     
+    // MARK: Request authorization
+    
+    func testRequestAuthPreconditions() {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+
+        manager.withServicesEnabled(false) {
+            let error = subject.requestAuthorization(.WhenInUse)
+            XCTAssertNotNil(error, "Request auth returns error when location services are disabled")
+        }
+        
+        manager.withAuthorizationStatus(.Denied) {
+            let error = subject.requestAuthorization(.WhenInUse)
+            XCTAssertNotNil(error, "Request auth returns error when authorization is denied")
+        }
+
+        manager.withAuthorizationStatus(.Restricted) {
+            let error = subject.requestAuthorization(.WhenInUse)
+            XCTAssertNotNil(error, "Request auth returns error when authorization is restricted")
+        }
+
+        manager.withAuthorizationStatus(.AuthorizedWhenInUse) {
+            let error = subject.requestAuthorization(.Always)
+            XCTAssertNotNil(error, "Request auth returns error for .Always when existing authorization is only .WhenInUse")
+        }
+    }
+
+    func testRequestAuth() {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+
+        manager.withAuthorizationStatus(.AuthorizedWhenInUse) {
+            let error = subject.requestAuthorization(.WhenInUse)
+            XCTAssertNil(error, "Request auth does not return error when already authorized")
+            XCTAssertNil(manager.requestedAuthorizationStatus, "Request auth does nothing when already authorized")
+        }
+
+        manager.withAuthorizationStatus(.AuthorizedAlways) {
+            let error = subject.requestAuthorization(.Always)
+            XCTAssertNil(error, "Request auth does not return error when already authorized")
+            XCTAssertNil(manager.requestedAuthorizationStatus, "Request auth does nothing when already authorized")
+        }
+
+        manager.withAuthorizationStatus(.NotDetermined) {
+            subject.requestAuthorization(.WhenInUse)
+            XCTAssertEqual(manager.requestedAuthorizationStatus, .AuthorizedWhenInUse, "Requests auth when necessary")
+        }
+
+        manager.withAuthorizationStatus(.NotDetermined) {
+            subject.requestAuthorization(.Always)
+            XCTAssertEqual(manager.requestedAuthorizationStatus, .AuthorizedAlways, "Requests auth when necessary")
+        }
+    }
+    
     // MARK: Distance filter
 
     func testDistanceFilterShouldChangeWithAccuracy() {
