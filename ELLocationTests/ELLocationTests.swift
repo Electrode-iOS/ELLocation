@@ -292,19 +292,21 @@ class ELLocationTests: XCTestCase {
         let manager = MockCLLocationManager()
         let subject = LocationManager(manager: manager)
 
-        XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
-
-        subject.withListener(accuracy: .Good, updateFrequency: .Continuous) {
-            XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
+        manager.withAuthorizationStatus(.AuthorizedWhenInUse) {
+            XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
 
             subject.withListener(accuracy: .Good, updateFrequency: .Continuous) {
-                XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
+                XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
+
+                subject.withListener(accuracy: .Good, updateFrequency: .Continuous) {
+                    XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
+                }
+
+                XCTAssertTrue(manager.updatingLocation, "Removing second listener does not stop location updates")
             }
 
-            XCTAssertTrue(manager.updatingLocation, "Removing second listener does not stop location updates")
+            XCTAssertFalse(manager.updatingLocation, "Removing all listeners stop location updates")
         }
-
-        XCTAssertFalse(manager.updatingLocation, "Removing all listeners stop location updates")
     }
     
     // MARK: Distance filter
