@@ -83,6 +83,13 @@ extension LocationManager {
 
         deregisterListener(listener)
     }
+
+    // FIXME: The async testing is tightly coupled to the internal implementation (relying on use
+    // of `dispatch_async` for listener callbacks), but I don't know a better way.
+    // -- @nonsensery
+    func waitForMockListenerCallbacks(continuation: () -> Void) {
+        dispatch_async(dispatch_get_main_queue(), continuation)
+    }
 }
 
 class ELLocationTests: XCTestCase {
@@ -127,10 +134,6 @@ class ELLocationTests: XCTestCase {
     }
     
     func testAddAndRemoveListener() {
-        // FIXME: The async testing is tightly coupled to the internal implementation (relying on use
-        // of `dispatch_async` for listener callbacks), but I don't know a better way.
-        // -- @nonsensery
-
         let manager = MockCLLocationManager()
         let subject = LocationManager(manager: manager)
         let listener = NSObject()
@@ -149,7 +152,7 @@ class ELLocationTests: XCTestCase {
         manager.dispatchMockUpdate(latitude: 42, longitude: -16)
 
         // Wait...
-        dispatch_async(dispatch_get_main_queue()) {
+        subject.waitForMockListenerCallbacks() {
             // Verify that callback was received:
             XCTAssertTrue(responseReceived, "Registered listener receives callback")
             
@@ -163,7 +166,7 @@ class ELLocationTests: XCTestCase {
             manager.dispatchMockUpdate(latitude: 143, longitude: 85)
             
             // Wait...
-            dispatch_async(dispatch_get_main_queue()) {
+            subject.waitForMockListenerCallbacks() {
                 // Verify that callback was NOT received:
                 XCTAssertFalse(responseReceived, "Deregistered listener no longer receives callback")
                 
@@ -196,7 +199,7 @@ class ELLocationTests: XCTestCase {
         manager.dispatchMockUpdate(latitude: 42, longitude: -16)
 
         // Wait...
-        dispatch_async(dispatch_get_main_queue()) {
+        subject.waitForMockListenerCallbacks() {
             // Verify that callback was received:
             XCTAssertTrue(responseReceived, "Registered listener receives callback")
 
@@ -211,7 +214,7 @@ class ELLocationTests: XCTestCase {
             manager.dispatchMockUpdate(latitude: 143, longitude: 85)
 
             // Wait...
-            dispatch_async(dispatch_get_main_queue()) {
+            subject.waitForMockListenerCallbacks() {
                 // Verify that callback was NOT received:
                 XCTAssertFalse(responseReceived, "Deallocated listener no longer receives callback")
 
