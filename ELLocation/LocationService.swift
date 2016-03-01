@@ -140,6 +140,18 @@ private extension CLAuthorizationStatus {
             return false
         }
     }
+
+    /**
+     Whether this authorization status allows any form of monitoring.
+     */
+    var allowsMonitoring: Bool {
+        switch self {
+        case .NotDetermined, .Denied, .Restricted:
+            return false
+        default:
+            return true
+        }
+    }
 }
 
 // MARK: Location Authorization API
@@ -313,6 +325,10 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     /// The monitoring mode for the current state.
     private var monitoring: LocationMonitoring? {
         guard !allLocationListeners.isEmpty else {
+            return nil
+        }
+
+        guard authorizationStatus.allowsMonitoring else {
             return nil
         }
 
