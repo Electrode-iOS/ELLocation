@@ -173,6 +173,54 @@ class ELLocationTests: XCTestCase {
         
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
+
+    func testWeakListenerRefs() {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+
+        var listener: NSObject? = NSObject()
+        weak var weakListener: NSObject? = listener
+
+        let done = expectationWithDescription("test finished")
+
+        var responseReceived = false
+        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
+            responseReceived = true
+        }
+
+        // Add listener:
+        subject.registerListener(listener!, request:request)
+
+        // Update location:
+        manager.dispatchMockUpdate(latitude: 42, longitude: -16)
+
+        // Wait...
+        dispatch_async(dispatch_get_main_queue()) {
+            // Verify that callback was received:
+            XCTAssertTrue(responseReceived, "Registered listener receives callback")
+
+            // Reset the flag:
+            responseReceived = false
+
+            // Allow listener to be deallocated:
+            listener = nil
+            XCTAssertNil(weakListener, "Location Manager does not prevent listener from being deallocated")
+
+            // Update location:
+            manager.dispatchMockUpdate(latitude: 143, longitude: 85)
+
+            // Wait...
+            dispatch_async(dispatch_get_main_queue()) {
+                // Verify that callback was NOT received:
+                XCTAssertFalse(responseReceived, "Deallocated listener no longer receives callback")
+
+                // Done
+                done.fulfill()
+            }
+        }
+
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+    }
     
     // MARK: Request authorization
     
