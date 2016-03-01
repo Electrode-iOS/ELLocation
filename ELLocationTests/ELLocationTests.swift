@@ -47,19 +47,23 @@ class MockCLLocationManager: ELCLLocationManager {
     func stopMonitoringSignificantLocationChanges() {
         monitoringSignificantLocationChanges = false
     }
+
+    func dispatchMockUpdate(latitude latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        self.delegate!.locationManager!(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: latitude, longitude: longitude)])
+    }
 }
 
 // Convenience methods for testing:
 
 extension MockCLLocationManager {
-    func withServicesEnabled(enabled: Bool, closure: () -> Void) {
+    func withMockServicesEnabled(enabled: Bool, closure: () -> Void) {
         let oldEnabled = coreLocationServicesEnabled
         coreLocationServicesEnabled = enabled
         closure()
         coreLocationServicesEnabled = oldEnabled
     }
 
-    func withAuthorizationStatus(status: CLAuthorizationStatus, closure: () -> Void) {
+    func withMockAuthorizationStatus(status: CLAuthorizationStatus, closure: () -> Void) {
         let oldStatus = coreLocationAuthorizationStatus
         coreLocationAuthorizationStatus = status
         closure()
@@ -68,7 +72,7 @@ extension MockCLLocationManager {
 }
 
 extension LocationManager {
-    func withListener(accuracy accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency, closure: () -> Void) {
+    func withMockListener(accuracy accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency, closure: () -> Void) {
         let listener = NSObject()
         let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in }
 
@@ -92,10 +96,6 @@ class ELLocationTests: XCTestCase {
         super.tearDown()
     }
     
-    private func deliverLocationUpdate(subject: LocationManager, latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
-        subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: latitude, longitude: longitude)])
-    }
-
     func testCalculateAndUpdateAccuracyCrash() {
         LocationAuthorizationService().requestAuthorization(.WhenInUse)
         LocationAuthorizationService().requestAuthorization(.Always)
@@ -114,12 +114,12 @@ class ELLocationTests: XCTestCase {
         let listener = NSObject()
         let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in }
         
-        manager.withServicesEnabled(false) {
+        manager.withMockServicesEnabled(false) {
             let error1 = subject.registerListener(listener, request: request)
             XCTAssertNotNil(error1, "Register returns error when location services are disabled")
         }
 
-        manager.withServicesEnabled(true) {
+        manager.withMockServicesEnabled(true) {
             let error2 = subject.registerListener(listener, request: request)
             XCTAssertNil(error2, "Register does not return error when location services are enabled")
         }
@@ -145,7 +145,7 @@ class ELLocationTests: XCTestCase {
         subject.registerListener(listener, request:request)
         
         // Update location:
-        deliverLocationUpdate(subject, latitude: 42, longitude: -16)
+        manager.dispatchMockUpdate(latitude: 42, longitude: -16)
 
         // Wait...
         dispatch_async(dispatch_get_main_queue()) {
@@ -159,7 +159,7 @@ class ELLocationTests: XCTestCase {
             subject.deregisterListener(listener)
             
             // Update location:
-            self.deliverLocationUpdate(subject, latitude: 143, longitude: 85)
+            manager.dispatchMockUpdate(latitude: 143, longitude: 85)
             
             // Wait...
             dispatch_async(dispatch_get_main_queue()) {
@@ -180,22 +180,22 @@ class ELLocationTests: XCTestCase {
         let manager = MockCLLocationManager()
         let subject = LocationManager(manager: manager)
 
-        manager.withServicesEnabled(false) {
+        manager.withMockServicesEnabled(false) {
             let error = subject.requestAuthorization(.WhenInUse)
             XCTAssertNotNil(error, "Request auth returns error when location services are disabled")
         }
         
-        manager.withAuthorizationStatus(.Denied) {
+        manager.withMockAuthorizationStatus(.Denied) {
             let error = subject.requestAuthorization(.WhenInUse)
             XCTAssertNotNil(error, "Request auth returns error when authorization is denied")
         }
 
-        manager.withAuthorizationStatus(.Restricted) {
+        manager.withMockAuthorizationStatus(.Restricted) {
             let error = subject.requestAuthorization(.WhenInUse)
             XCTAssertNotNil(error, "Request auth returns error when authorization is restricted")
         }
 
-        manager.withAuthorizationStatus(.AuthorizedWhenInUse) {
+        manager.withMockAuthorizationStatus(.AuthorizedWhenInUse) {
             let error = subject.requestAuthorization(.Always)
             XCTAssertNotNil(error, "Request auth returns error for .Always when existing authorization is only .WhenInUse")
         }
@@ -205,24 +205,24 @@ class ELLocationTests: XCTestCase {
         let manager = MockCLLocationManager()
         let subject = LocationManager(manager: manager)
 
-        manager.withAuthorizationStatus(.AuthorizedWhenInUse) {
+        manager.withMockAuthorizationStatus(.AuthorizedWhenInUse) {
             let error = subject.requestAuthorization(.WhenInUse)
             XCTAssertNil(error, "Request auth does not return error when already authorized")
             XCTAssertNil(manager.requestedAuthorizationStatus, "Request auth does nothing when already authorized")
         }
 
-        manager.withAuthorizationStatus(.AuthorizedAlways) {
+        manager.withMockAuthorizationStatus(.AuthorizedAlways) {
             let error = subject.requestAuthorization(.Always)
             XCTAssertNil(error, "Request auth does not return error when already authorized")
             XCTAssertNil(manager.requestedAuthorizationStatus, "Request auth does nothing when already authorized")
         }
 
-        manager.withAuthorizationStatus(.NotDetermined) {
+        manager.withMockAuthorizationStatus(.NotDetermined) {
             subject.requestAuthorization(.WhenInUse)
             XCTAssertEqual(manager.requestedAuthorizationStatus, .AuthorizedWhenInUse, "Requests auth when necessary")
         }
 
-        manager.withAuthorizationStatus(.NotDetermined) {
+        manager.withMockAuthorizationStatus(.NotDetermined) {
             subject.requestAuthorization(.Always)
             XCTAssertEqual(manager.requestedAuthorizationStatus, .AuthorizedAlways, "Requests auth when necessary")
         }
@@ -267,12 +267,12 @@ class ELLocationTests: XCTestCase {
 
         // Set the auth status, add a listener and see what happens:
 
-        manager.withAuthorizationStatus(authorizationStatus) {
+        manager.withMockAuthorizationStatus(authorizationStatus) {
             // Without any listeners, the monitoring should be off:
             XCTAssertFalse(manager.updatingLocation, "No listeners means no GPS tracking")
             XCTAssertFalse(manager.monitoringSignificantLocationChanges, "No listeners means no Cellular tracking")
 
-            subject.withListener(accuracy: accuracy, updateFrequency: updateFrequency) {
+            subject.withMockListener(accuracy: accuracy, updateFrequency: updateFrequency) {
                 if expectGPS {
                     XCTAssertTrue(manager.updatingLocation, "\(accuracy)/\(updateFrequency) listener triggers GPS tracking")
                 } else {
@@ -292,13 +292,13 @@ class ELLocationTests: XCTestCase {
         let manager = MockCLLocationManager()
         let subject = LocationManager(manager: manager)
 
-        manager.withAuthorizationStatus(.AuthorizedWhenInUse) {
+        manager.withMockAuthorizationStatus(.AuthorizedWhenInUse) {
             XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
 
-            subject.withListener(accuracy: .Good, updateFrequency: .Continuous) {
+            subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
                 XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
 
-                subject.withListener(accuracy: .Good, updateFrequency: .Continuous) {
+                subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
                     XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
                 }
 
