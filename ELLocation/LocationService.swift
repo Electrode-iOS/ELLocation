@@ -52,6 +52,10 @@ public enum LocationAccuracy: Int {
     case Best
 }
 
+private func < (lhs: LocationAccuracy, rhs: LocationAccuracy) -> Bool {
+    return lhs.rawValue < rhs.rawValue
+}
+
 /**
 Callback frequency setting. Lowest power consumption is achieved by combining LocationUpdateFrequency.ChangesOnly
  with LocationAccuracy.Coarse
@@ -62,6 +66,10 @@ Callback frequency setting. Lowest power consumption is achieved by combining Lo
 public enum LocationUpdateFrequency: Int {
     case ChangesOnly
     case Continuous
+}
+
+private func < (lhs: LocationUpdateFrequency, rhs: LocationUpdateFrequency) -> Bool {
+    return lhs.rawValue < rhs.rawValue
 }
 
 public enum LocationAuthorization {
@@ -252,7 +260,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     private var accuracy: LocationAccuracy {
         let allAccuracies = allLocationListeners.map({ $0.request.accuracy })
 
-        guard let value = allAccuracies.maxElement({ $0.rawValue < $1.rawValue }) else {
+        guard let value = allAccuracies.maxElement(<) else {
             return .Good
         }
 
@@ -263,7 +271,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     private var updateFrequency: LocationUpdateFrequency {
         let allUpdateFrequencies = allLocationListeners.map({ $0.request.updateFrequency })
 
-        guard let value = allUpdateFrequencies.maxElement({ $0.rawValue < $1.rawValue }) else {
+        guard let value = allUpdateFrequencies.maxElement(<) else {
             return .ChangesOnly
         }
 
