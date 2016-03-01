@@ -76,7 +76,8 @@ extension LocationManager {
         let listener = NSObject()
         let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in }
 
-        registerListener(listener, request: request)
+        let error = registerListener(listener, request: request)
+        XCTAssertNil(error, "Must be able to register a mock listener")
 
         closure()
 
