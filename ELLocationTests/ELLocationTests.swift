@@ -90,7 +90,11 @@ class ELLocationTests: XCTestCase {
         // no crash here is a test success
         subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
     }
+
+    // MARK: Listeners
     
+    // MARK: Distance filter
+
     func testDistanceFilterShouldChangeWithAccuracy() {
         let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
         let subject = LocationManager()
@@ -114,6 +118,8 @@ class ELLocationTests: XCTestCase {
         subject.deregisterListener(self)
     }
     
+    // MARK: Desired accuracy
+
     func testDesiredAccuracyShouldChangeWithAccuracy() {
         let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
         let subject = LocationManager()
