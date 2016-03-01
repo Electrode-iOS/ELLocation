@@ -85,8 +85,10 @@ class ELLocationTests: XCTestCase {
         LocationAuthorizationService().requestAuthorization(.WhenInUse)
         LocationAuthorizationService().requestAuthorization(.Always)
         
+        let subject = LocationManager()
+
         // no crash here is a test success
-        LocationManager.shared.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
+        subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
     }
     
     func testDistanceFilterShouldChangeWithAccuracy() {

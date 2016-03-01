@@ -276,8 +276,8 @@ This is the internal class that is set up as a singleton that interfaces with `C
 the protocols that define `ELLocation` services in the public API.
 */
 class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationProvider, CLLocationManagerDelegate {
-    static let shared: LocationManager = LocationManager()
-    
+    private static let shared: LocationManager = LocationManager()
+
     // MARK: Properties, initializers and internal structures
     
     var manager: ELCLLocationManager
