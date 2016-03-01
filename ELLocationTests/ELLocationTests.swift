@@ -49,6 +49,37 @@ class MockCLLocationManager: ELCLLocationManager {
     }
 }
 
+// Convenience methods for testing:
+
+extension MockCLLocationManager {
+    func withServicesEnabled(enabled: Bool, closure: () -> Void) {
+        let oldEnabled = coreLocationServicesEnabled
+        coreLocationServicesEnabled = enabled
+        closure()
+        coreLocationServicesEnabled = oldEnabled
+    }
+
+    func withAuthorizationStatus(status: CLAuthorizationStatus, closure: () -> Void) {
+        let oldStatus = coreLocationAuthorizationStatus
+        coreLocationAuthorizationStatus = status
+        closure()
+        coreLocationAuthorizationStatus = oldStatus
+    }
+}
+
+extension LocationManager {
+    func withListener(accuracy accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency, closure: () -> Void) {
+        let listener = NSObject()
+        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in }
+
+        registerListener(listener, request: request)
+
+        closure()
+
+        deregisterListener(listener)
+    }
+}
+
 class ELLocationTests: XCTestCase {
     
     override func setUp() {
