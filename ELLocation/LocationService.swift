@@ -435,13 +435,8 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             // Use a distance filter to ignore unnecessary updates so the app can sleep more often
             manager.distanceFilter = self.coreLocationDistanceFilter
 
-            let monitoring = self.monitoring
-
-            if monitoring == .None {
-                manager.stopUpdatingLocation()
-                manager.stopMonitoringSignificantLocationChanges()
-            } else {
-                switch monitoring! {
+            if let monitoring = self.monitoring {
+                switch monitoring {
                 case .SignificantUpdates:
                     manager.startMonitoringSignificantLocationChanges()
                     manager.stopUpdatingLocation()
@@ -449,6 +444,9 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
                     manager.startUpdatingLocation()
                     manager.stopMonitoringSignificantLocationChanges()
                 }
+            } else {
+                manager.stopUpdatingLocation()
+                manager.stopMonitoringSignificantLocationChanges()
             }
         }
     }
