@@ -239,6 +239,38 @@ public struct LocationUpdateService: LocationUpdateProvider {
 
 // MARK: Internal location manager class
 
+/// A custom protocol to break the tight coupling of `LocationManager` and
+/// `CLLocationManager`.
+///
+/// Note: Creating instance properties for `coreLocationServicesEnabled` and
+/// `coreLocationAuthorizationStatus` allows them to be mocked more easily.
+protocol ELCLLocationManager: AnyObject {
+    /// A cover method for `CLLocationManager.locationServicesEnabled()`
+    var coreLocationServicesEnabled: Bool { get }
+    /// A cover method for `CLLocationManager.authorizationStatus()`
+    var coreLocationAuthorizationStatus: CLAuthorizationStatus { get }
+    var desiredAccuracy: CLLocationAccuracy { get set }
+    var distanceFilter: CLLocationDistance { get set }
+    weak var delegate: CLLocationManagerDelegate? { get set }
+    
+    func requestAlwaysAuthorization()
+    func requestWhenInUseAuthorization()
+    func startUpdatingLocation()
+    func stopUpdatingLocation()
+    func startMonitoringSignificantLocationChanges()
+    func stopMonitoringSignificantLocationChanges()
+}
+
+extension CLLocationManager: ELCLLocationManager {
+    var coreLocationServicesEnabled: Bool {
+        return CLLocationManager.locationServicesEnabled()
+    }
+    
+    var coreLocationAuthorizationStatus: CLAuthorizationStatus {
+        return CLLocationManager.authorizationStatus()
+    }
+}
+
 /**
 This is the internal class that is set up as a singleton that interfaces with `CLLocationManager` and adopts
 the protocols that define `ELLocation` services in the public API.
@@ -248,12 +280,12 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     
     // MARK: Properties, initializers and internal structures
     
-    var manager: CLLocationManager
+    var manager: ELCLLocationManager
     private var allLocationListeners: [LocationListener]
 
     /// The current Core Location authorization status
     private var authorizationStatus: CLAuthorizationStatus {
-        return CLLocationManager.authorizationStatus()
+        return manager.coreLocationAuthorizationStatus
     }
 
     /// The accuracy, based on the current set of listener requests.
@@ -328,9 +360,13 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
     }
 
-    override init() {
-        manager = CLLocationManager()
-        allLocationListeners = [LocationListener]()
+    override convenience init() {
+        self.init(manager: CLLocationManager())
+    }
+    
+    init(manager: ELCLLocationManager) {
+        self.manager = manager
+        self.allLocationListeners = [LocationListener]()
         super.init()
         manager.delegate = self
     }
@@ -460,7 +496,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
 
     private func checkIfLocationServicesEnabled() -> NSError? {
-        if CLLocationManager.locationServicesEnabled() {
+        if manager.coreLocationServicesEnabled {
             return nil
         } else {
             return NSError(ELLocationError.LocationServicesDisabled)
