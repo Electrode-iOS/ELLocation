@@ -310,50 +310,78 @@ class ELLocationTests: XCTestCase {
     // MARK: Distance filter
 
     func testDistanceFilterShouldChangeWithAccuracy() {
-        let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
-        let subject = LocationManager()
-        
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+
+        let coarseListener = NSObject()
+        let goodListener = NSObject()
+        let betterListener = NSObject()
+        let bestListener = NSObject()
+
         // Note: behavior with no listeners is not defined.
 
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
-        XCTAssertEqual(subject.manager.distanceFilter, 500)
-        subject.deregisterListener(self)
-        
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
-        XCTAssertEqual(subject.manager.distanceFilter, 50)
-        subject.deregisterListener(self)
-        
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
-        XCTAssertEqual(subject.manager.distanceFilter, 5)
-        subject.deregisterListener(self)
-        
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
-        XCTAssertEqual(subject.manager.distanceFilter, 2)
-        subject.deregisterListener(self)
+        // Add listeners from lowest to highest accuracy and verify that distance filter decreases:
+
+        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.distanceFilter, 500)
+
+        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.distanceFilter, 50)
+
+        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.distanceFilter, 5)
+
+        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.distanceFilter, 2)
+
+        // Remove listeners from lowest to highest accuracy and verify that distance filter DOES NOT CHANGE:
+
+        subject.deregisterListener(coarseListener)
+        XCTAssertEqual(manager.distanceFilter, 2)
+
+        subject.deregisterListener(goodListener)
+        XCTAssertEqual(manager.distanceFilter, 2)
+
+        subject.deregisterListener(betterListener)
+        XCTAssertEqual(manager.distanceFilter, 2)
     }
-    
-    // MARK: Desired accuracy
 
+    // MARK: Desired accuracy
+    
     func testDesiredAccuracyShouldChangeWithAccuracy() {
-        let handler: LocationUpdateResponseHandler = { (success: Bool, location: CLLocation?, error: NSError?) in }
-        let subject = LocationManager()
-        
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+
+        let coarseListener = NSObject()
+        let goodListener = NSObject()
+        let betterListener = NSObject()
+        let bestListener = NSObject()
+
         // Note: behavior with no listeners is not defined.
 
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Coarse, response: handler))
-        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyKilometer)
-        subject.deregisterListener(self)
-        
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Good, response: handler))
-        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
-        subject.deregisterListener(self)
-        
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Better, response: handler))
-        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
-        subject.deregisterListener(self)
-        
-        subject.registerListener(self, request: LocationUpdateRequest(accuracy: .Best, response: handler))
-        XCTAssertEqual(subject.manager.desiredAccuracy, kCLLocationAccuracyBest)
-        subject.deregisterListener(self)
+        // Add listeners from lowest to highest accuracy and verify that desired accuracy increases:
+
+        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyKilometer)
+
+        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
+
+        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
+
+        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (success, location, error) -> Void in })
+        XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
+
+        // Remove listeners from lowest to highest accuracy and verify that desired accuracy DOES NOT CHANGE:
+
+        subject.deregisterListener(coarseListener)
+        XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
+
+        subject.deregisterListener(goodListener)
+        XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
+
+        subject.deregisterListener(betterListener)
+        XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
     }
 }
