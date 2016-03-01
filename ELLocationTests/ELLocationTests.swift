@@ -11,6 +11,44 @@ import XCTest
 import CoreLocation
 @testable import ELLocation
 
+class MockCLLocationManager: ELCLLocationManager {
+    var coreLocationServicesEnabled: Bool = true
+    var coreLocationAuthorizationStatus: CLAuthorizationStatus = .NotDetermined
+    var requestedAuthorizationStatus: CLAuthorizationStatus? = nil
+
+    var desiredAccuracy: CLLocationAccuracy = kCLLocationAccuracyBest
+    var distanceFilter: CLLocationDistance = kCLDistanceFilterNone
+    
+    var updatingLocation: Bool = false
+    var monitoringSignificantLocationChanges: Bool = false
+
+    weak var delegate: CLLocationManagerDelegate? = nil
+
+    func requestAlwaysAuthorization() {
+        requestedAuthorizationStatus = .AuthorizedAlways
+    }
+
+    func requestWhenInUseAuthorization() {
+        requestedAuthorizationStatus = .AuthorizedWhenInUse
+    }
+    
+    func startUpdatingLocation() {
+        updatingLocation = true
+    }
+
+    func stopUpdatingLocation() {
+        updatingLocation = false
+    }
+
+    func startMonitoringSignificantLocationChanges() {
+        monitoringSignificantLocationChanges = true
+    }
+
+    func stopMonitoringSignificantLocationChanges() {
+        monitoringSignificantLocationChanges = false
+    }
+}
+
 class ELLocationTests: XCTestCase {
     
     override func setUp() {
