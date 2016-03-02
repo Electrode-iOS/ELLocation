@@ -24,6 +24,12 @@ class MockCLLocationManager: ELCLLocationManager {
 
     weak var delegate: CLLocationManagerDelegate? = nil
 
+    var mockCurrentLocation: CLLocation = CLLocation(latitude: 45.5179694, longitude: -122.6771358) {
+        didSet {
+            self.delegate?.locationManager?(CLLocationManager(), didUpdateLocations: [mockCurrentLocation])
+        }
+    }
+
     func requestAlwaysAuthorization() {
         requestedAuthorizationStatus = .AuthorizedAlways
     }
@@ -48,8 +54,15 @@ class MockCLLocationManager: ELCLLocationManager {
         monitoringSignificantLocationChanges = false
     }
 
-    func dispatchMockUpdate(latitude latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
-        self.delegate!.locationManager!(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: latitude, longitude: longitude)])
+    func mockMoveByAtLeast(distance: CLLocationDistance) {
+        let oldLocation = mockCurrentLocation
+        var newLocation = oldLocation
+
+        while newLocation.distanceFromLocation(oldLocation) < distance {
+            newLocation = CLLocation(latitude: newLocation.coordinate.latitude + 0.000001, longitude: newLocation.coordinate.longitude + 0.000001)
+        }
+
+        mockCurrentLocation = newLocation
     }
 }
 
@@ -149,7 +162,7 @@ class ELLocationTests: XCTestCase {
         subject.registerListener(listener, request:request)
         
         // Update location:
-        manager.dispatchMockUpdate(latitude: 42, longitude: -16)
+        manager.mockMoveByAtLeast(5)
 
         // Wait...
         subject.waitForMockListenerCallbacks() {
@@ -163,8 +176,8 @@ class ELLocationTests: XCTestCase {
             subject.deregisterListener(listener)
             
             // Update location:
-            manager.dispatchMockUpdate(latitude: 143, longitude: 85)
-            
+            manager.mockMoveByAtLeast(5)
+
             // Wait...
             subject.waitForMockListenerCallbacks() {
                 // Verify that callback was NOT received:
@@ -196,7 +209,7 @@ class ELLocationTests: XCTestCase {
         subject.registerListener(listener!, request:request)
 
         // Update location:
-        manager.dispatchMockUpdate(latitude: 42, longitude: -16)
+        manager.mockMoveByAtLeast(5)
 
         // Wait...
         subject.waitForMockListenerCallbacks() {
@@ -211,7 +224,7 @@ class ELLocationTests: XCTestCase {
             XCTAssertNil(weakListener, "Location Manager does not prevent listener from being deallocated")
 
             // Update location:
-            manager.dispatchMockUpdate(latitude: 143, longitude: 85)
+            manager.mockMoveByAtLeast(5)
 
             // Wait...
             subject.waitForMockListenerCallbacks() {
