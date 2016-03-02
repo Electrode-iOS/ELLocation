@@ -451,4 +451,127 @@ class ELLocationTests: XCTestCase {
         subject.deregisterListener(betterListener)
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
     }
+
+    // MARK: Accuracy in practice
+
+    func testContinuousUpdates() {
+        for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
+            let done = expectationWithDescription("\(accuracy) test finished")
+
+            testContinuousUpdates(accuracy, then: { done.fulfill() })
+        }
+
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+    }
+
+    func testContinuousUpdates(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency = .Continuous, then: () -> Void) {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+        let listener = NSObject()
+
+        var responseReceived = false
+        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in
+            responseReceived = true
+        }
+
+        // Add listener:
+        subject.registerListener(listener, request:request)
+
+        // Update location:
+        manager.mockMoveByAtLeast(0.1)
+
+        // Wait...
+        subject.waitForMockListenerCallbacks() {
+            // Verify that callback was received:
+            XCTAssertTrue(responseReceived, "Registered listener receives callback (\(accuracy))")
+
+            // Reset the flag:
+            responseReceived = false
+
+            // Update location (~0.5 meters away):
+            manager.mockMoveByAtLeast(0.5)
+
+            // Wait...
+            subject.waitForMockListenerCallbacks() {
+                // Verify that callback was received:
+                XCTAssertTrue(responseReceived, "Registered listener receives callback (\(accuracy))")
+
+                // DON'T FORGET THIS! If the listener is dealloced, it will not receive callbacks
+                subject.deregisterListener(listener)
+
+                // Done
+                then()
+            }
+        }
+    }
+
+    func testDiscreteUpdates() {
+        // Note: .Best has a threshold of 0m which means it always acts like "continuous"
+        let thresholds: [LocationAccuracy:CLLocationDistance] = [.Coarse: 200, .Good: 100, .Better: 10, .Best: 0]
+
+        for (accuracy, threshold) in thresholds {
+            let done = expectationWithDescription("\(accuracy) test finished")
+
+            if threshold > 0 {
+                testDiscreteUpdates(accuracy, threshold: threshold, then: { done.fulfill() })
+            } else {
+                testContinuousUpdates(accuracy, updateFrequency: .ChangesOnly, then: { done.fulfill() })
+            }
+        }
+
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+    }
+
+    func testDiscreteUpdates(accuracy: LocationAccuracy, threshold: CLLocationDistance, then: () -> Void) {
+        let manager = MockCLLocationManager()
+        let subject = LocationManager(manager: manager)
+        let listener = NSObject()
+
+        var responseReceived = false
+        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: .ChangesOnly) { (success, location, error) -> Void in
+            responseReceived = true
+        }
+
+        // Add listener:
+        subject.registerListener(listener, request: request)
+
+        // Update location:
+        manager.mockMoveByAtLeast(0.001)
+
+        // Wait...
+        subject.waitForMockListenerCallbacks() {
+            // Verify that callback was received:
+            XCTAssertTrue(responseReceived, "Registered listener receives callback (\(accuracy))")
+
+            // Reset the flag:
+            responseReceived = false
+
+            // Update location (still under the threshold):
+            manager.mockMoveByAtLeast(threshold * 0.9)
+
+            // Wait...
+            subject.waitForMockListenerCallbacks() {
+                // Verify that callback was received:
+                XCTAssertFalse(responseReceived, "Registered listener does not receive callback (\(accuracy))")
+
+                // Reset the flag:
+                responseReceived = false
+
+                // Update location (over the threshold):
+                manager.mockMoveByAtLeast(threshold * 0.2)
+
+                // Wait...
+                subject.waitForMockListenerCallbacks() {
+                    // Verify that callback was received:
+                    XCTAssertTrue(responseReceived, "Registered listener receives callback (\(accuracy))")
+
+                    // DON'T FORGET THIS! If the listener is dealloced, it will not receive callbacks
+                    subject.deregisterListener(listener)
+                
+                    // Done
+                    then()
+                }
+            }
+        }
+    }
 }
