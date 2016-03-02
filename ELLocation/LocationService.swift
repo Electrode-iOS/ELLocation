@@ -387,7 +387,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         manager.delegate = self
     }
     
-    class LocationListener {
+    private class LocationListener {
         static let locationChangeThresholdMeters: [LocationAccuracy: CLLocationDistance] = [
             .Best: 0,
             .Better: 10,
