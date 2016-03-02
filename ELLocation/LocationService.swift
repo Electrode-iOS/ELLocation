@@ -292,7 +292,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
     // MARK: Properties, initializers and internal structures
     
-    var manager: ELCLLocationManager
+    private var manager: ELCLLocationManager
     private var allLocationListeners: [LocationListener]
 
     /// The current Core Location authorization status
