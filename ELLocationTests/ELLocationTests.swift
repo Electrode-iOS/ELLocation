@@ -133,7 +133,7 @@ class ELLocationTests: XCTestCase {
         let manager = MockCLLocationManager()
         let subject = LocationManager(manager: manager)
         let listener = NSObject()
-        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in }
+        let request = LocationUpdateRequest() { (success, location, error) -> Void in }
         
         manager.withMockServicesEnabled(false) {
             let error1 = subject.registerListener(listener, request: request)
@@ -154,7 +154,7 @@ class ELLocationTests: XCTestCase {
         let done = expectationWithDescription("test finished")
 
         var responseReceived = false
-        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
+        let request = LocationUpdateRequest() { (success, location, error) -> Void in
             responseReceived = true
         }
 
@@ -201,7 +201,7 @@ class ELLocationTests: XCTestCase {
         let done = expectationWithDescription("test finished")
 
         var responseReceived = false
-        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
+        let request = LocationUpdateRequest() { (success, location, error) -> Void in
             responseReceived = true
         }
 
