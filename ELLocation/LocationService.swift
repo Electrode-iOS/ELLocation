@@ -195,20 +195,13 @@ public struct LocationUpdateRequest {
     let response: LocationUpdateResponseHandler
     
     /**
-    Convenience initializer defaulting updateFrequency to .Continuous
-    */
-    public init(accuracy: LocationAccuracy, response: LocationUpdateResponseHandler) {
-        self.init(accuracy: accuracy, updateFrequency: .Continuous, response: response)
-    }
-    
-    /**
-    Initializes a request to be used for registering for location updates.
-    
-    - parameter accuracy: The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered.
-    - parameter updateFrequency: The rate at which to notify the listener
-    - parameter response: This closure is called when a update is received or if there's an error.
-    */
-    public init(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency, response: LocationUpdateResponseHandler) {
+     Initializes a request to be used for registering for location updates.
+
+     - parameter accuracy: The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered. Default value is `.Good`
+     - parameter updateFrequency: The rate at which to notify the listener. Default value is `.Continuous`.
+     - parameter response: This closure is called when a update is received or if there's an error.
+     */
+    public init(accuracy: LocationAccuracy = .Good, updateFrequency: LocationUpdateFrequency = .Continuous, response: LocationUpdateResponseHandler) {
         self.accuracy = accuracy
         self.response = response
         self.updateFrequency = updateFrequency
