@@ -1,18 +1,16 @@
 # ELLocation [![Build Status](https://travis-ci.org/Electrode-iOS/ELLocation.svg)](https://travis-ci.org/Electrode-iOS/ELLocation)
 
-ELLocation provides the `ELLocation` module.
-
-`ELLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `ELLocation` is also designed to work well with, and to utilize other libraries in [TheHolyGrail](https://github.com/TheHolyGrail), or THG for short.
+`ELLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `ELLocation` is also designed to work well with, and to utilize other libraries in [Electrode-iOS](https://github.com/Electrode-iOS).
 
 ## A quick word about dependencies
 
-`ELLocation`/ELLocation depends on [`ELFoundation`/ELFoundation](https://github.com/TheHolyGrail/ELFoundation).
+`ELLocation` depends on [`ELFoundation`/ELFoundation](https://github.com/Electrode-iOS/ELFoundation).
 
 THG projects are designed to live side-by-side in the file system, like so:
 
 * \MyProject
 * \MyProject\ELFoundation
-* \MyProject\KillerRabbit
+* \MyProject\ELLocation
 
 ## Common Usage
 
@@ -74,22 +72,13 @@ Combining `accuracy: .Coarse` with `updateFrequency: .ChangesOnly`, along with `
 
 We appreciate your contributions to all of our projects and look forward to interacting with you via Pull Requests, the issue tracker, via Twitter, etc.  We're happy to help you, and to have you help us.  We'll strive to answer every PR and issue and be very transparent in what we do.
 
-When contributing code, please refer to our [Dennis](https://github.com/TheHolyGrail/Dennis).
-
-###### THG's Primary Contributors
-
-Dr. Sneed (@bsneed)<br>
-Steve Riggins (@steveriggins)<br>
-Sam Grover (@samgrover)<br>
-Angelo Di Paolo (@angelodipaolo)<br>
-Cody Garvin (@migs647)<br>
-Wes Ostler (@wesostler)<br>
+When contributing code, please refer to our [Dennis](https://github.com/Electrode-iOS/Dennis).
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Walmart, TheHolyGrail, and other Contributors
+Copyright (c) 2015 Walmart, and other Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
