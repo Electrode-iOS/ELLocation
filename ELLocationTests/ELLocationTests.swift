@@ -84,7 +84,7 @@ extension MockCLLocationManager {
     }
 }
 
-extension LocationManager {
+extension LocationUpdateService {
     func withMockListener(accuracy accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency, closure: () -> Void) {
         let listener = NSObject()
         let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in }
@@ -97,7 +97,7 @@ extension LocationManager {
         deregisterListener(listener)
     }
 
-    // FIXME: The async testing is tightly coupled to the internal implementation (relying on use
+    // NOTE: The async testing is tightly coupled to the internal implementation (relying on use
     // of `dispatch_async` for listener callbacks), but I don't know a better way.
     // -- @nonsensery
     func waitForMockListenerCallbacks(continuation: () -> Void) {
@@ -131,10 +131,11 @@ class ELLocationTests: XCTestCase {
     
     func testAddListenerPreconditions() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
         let listener = NSObject()
         let request = LocationUpdateRequest() { (success, location, error) -> Void in }
-        
+
         manager.withMockServicesEnabled(false) {
             let error1 = subject.registerListener(listener, request: request)
             XCTAssertNotNil(error1, "Register returns error when location services are disabled")
@@ -148,7 +149,8 @@ class ELLocationTests: XCTestCase {
     
     func testAddAndRemoveListener() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
         let listener = NSObject()
         
         let done = expectationWithDescription("test finished")
@@ -182,7 +184,7 @@ class ELLocationTests: XCTestCase {
             subject.waitForMockListenerCallbacks() {
                 // Verify that callback was NOT received:
                 XCTAssertFalse(responseReceived, "Deregistered listener no longer receives callback")
-                
+
                 // Done
                 done.fulfill()
             }
@@ -193,7 +195,8 @@ class ELLocationTests: XCTestCase {
 
     func testWeakListenerRefs() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
 
         var listener: NSObject? = NSObject()
         weak var weakListener: NSObject? = listener
@@ -243,7 +246,8 @@ class ELLocationTests: XCTestCase {
     
     func testRequestAuthPreconditions() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationAuthorizationService(locationAuthorizationProvider: provider)
 
         manager.withMockServicesEnabled(false) {
             let error = subject.requestAuthorization(.WhenInUse)
@@ -268,7 +272,8 @@ class ELLocationTests: XCTestCase {
 
     func testRequestAuth() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationAuthorizationService(locationAuthorizationProvider: provider)
 
         manager.withMockAuthorizationStatus(.AuthorizedWhenInUse) {
             let error = subject.requestAuthorization(.WhenInUse)
@@ -310,7 +315,8 @@ class ELLocationTests: XCTestCase {
 
     func testLocationMonitoring(authorizationStatus authorizationStatus: CLAuthorizationStatus, accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency) {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
 
         var expectGPS: Bool
         var expectCellular: Bool
@@ -355,7 +361,8 @@ class ELLocationTests: XCTestCase {
 
     func testLocationMonitoringWithMultipleListeners() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
 
         manager.withMockAuthorizationStatus(.AuthorizedWhenInUse) {
             XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
@@ -378,7 +385,8 @@ class ELLocationTests: XCTestCase {
 
     func testDistanceFilterShouldChangeWithAccuracy() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
 
         let coarseListener = NSObject()
         let goodListener = NSObject()
@@ -417,7 +425,8 @@ class ELLocationTests: XCTestCase {
     
     func testDesiredAccuracyShouldChangeWithAccuracy() {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
 
         let coarseListener = NSObject()
         let goodListener = NSObject()
@@ -466,7 +475,8 @@ class ELLocationTests: XCTestCase {
 
     func testContinuousUpdates(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency = .Continuous, then: () -> Void) {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
         let listener = NSObject()
 
         var responseReceived = false
@@ -524,7 +534,8 @@ class ELLocationTests: XCTestCase {
 
     func testDiscreteUpdates(accuracy: LocationAccuracy, threshold: CLLocationDistance, then: () -> Void) {
         let manager = MockCLLocationManager()
-        let subject = LocationManager(manager: manager)
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
         let listener = NSObject()
 
         var responseReceived = false
