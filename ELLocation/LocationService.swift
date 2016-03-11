@@ -207,7 +207,7 @@ public struct LocationUpdateRequest {
      - parameter updateFrequency: The rate at which to notify the listener. Default value is `.Continuous`.
      - parameter response: This closure is called when a update is received or if there's an error.
      */
-    public init(accuracy: LocationAccuracy = .Good, updateFrequency: LocationUpdateFrequency = .Continuous, response: LocationUpdateResponseHandler) {
+    public init(accuracy: LocationAccuracy = .Good, updateFrequency: LocationUpdateFrequency = .ChangesOnly, response: LocationUpdateResponseHandler) {
         self.accuracy = accuracy
         self.response = response
         self.updateFrequency = updateFrequency
