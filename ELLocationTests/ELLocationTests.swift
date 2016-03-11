@@ -397,16 +397,16 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that distance filter decreases:
 
-        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (success, location, error) -> Void in })
+        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { _,_,_ in })
         XCTAssertEqual(manager.distanceFilter, 500)
 
-        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in })
+        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { _,_,_ in })
         XCTAssertEqual(manager.distanceFilter, 50)
 
-        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (success, location, error) -> Void in })
+        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { _,_,_ in })
         XCTAssertEqual(manager.distanceFilter, 5)
 
-        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (success, location, error) -> Void in })
+        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { _,_,_ in })
         XCTAssertEqual(manager.distanceFilter, 2)
 
         // Remove listeners from lowest to highest accuracy and verify that distance filter DOES NOT CHANGE:
