@@ -383,6 +383,18 @@ class ELLocationTests: XCTestCase {
     
     // MARK: Distance filter
 
+    func testContinuousUpdatesDisablesDistanceFilter() {
+        for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
+            let manager = MockCLLocationManager()
+            let provider = LocationManager(manager: manager)
+            let subject = LocationUpdateService(locationProvider: provider)
+            
+            subject.withMockListener(accuracy: accuracy, updateFrequency: .Continuous) {
+                XCTAssertEqual(manager.distanceFilter, kCLDistanceFilterNone)
+            }
+        }
+    }
+
     func testDistanceFilterShouldChangeWithAccuracy() {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)
