@@ -163,7 +163,7 @@ public protocol LocationAuthorizationProvider {
 
 // The interface for requesting location authorization
 public struct LocationAuthorizationService: LocationAuthorizationProvider {
-    let locationAuthorizationProvider: LocationAuthorizationProvider = LocationManager.shared
+    let locationAuthorizationProvider: LocationAuthorizationProvider
     
     /**
     Request the specified authorization.
@@ -175,7 +175,13 @@ public struct LocationAuthorizationService: LocationAuthorizationProvider {
         return locationAuthorizationProvider.requestAuthorization(authorization)
     }
     
-    public init() {}
+    public init() {
+        self.init(locationAuthorizationProvider: LocationManager.shared)
+    }
+
+    init(locationAuthorizationProvider: LocationAuthorizationProvider) {
+        self.locationAuthorizationProvider = locationAuthorizationProvider
+    }
 }
 
 // MARK: Location Listener API
@@ -217,7 +223,7 @@ public protocol LocationUpdateProvider {
 // The interface for requesting location updates. Listeners can register to be informed of location updates
 // They can request to be deregistered or will be deregistered automatically when they are dealloced.
 public struct LocationUpdateService: LocationUpdateProvider {
-    let locationProvider: LocationUpdateProvider = LocationManager.shared
+    let locationProvider: LocationUpdateProvider
     
     /**
     Registers a listener to receive location updates as per the parameters defined in the request.
@@ -239,7 +245,13 @@ public struct LocationUpdateService: LocationUpdateProvider {
         locationProvider.deregisterListener(listener)
     }
     
-    public init() {}
+    public init() {
+        self.init(locationProvider: LocationManager.shared)
+    }
+
+    init(locationProvider: LocationUpdateProvider) {
+        self.locationProvider = locationProvider
+    }
 }
 
 // MARK: Internal location manager class
