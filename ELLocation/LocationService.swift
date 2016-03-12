@@ -477,9 +477,8 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         case .NotDetermined:
             requestAuth = true
         case .AuthorizedAlways:
-            if authorization != .Always {
-                return NSError(ELLocationError.AuthorizationAlways)
-            }
+            // Note: .AuthorizedAlways is good for both .Always and .WhenInUse
+            break
         case .AuthorizedWhenInUse:
             if authorization != .WhenInUse {
                 return NSError(ELLocationError.AuthorizationWhenInUse)

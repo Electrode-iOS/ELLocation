@@ -274,11 +274,10 @@ class ELLocationTests: XCTestCase {
                     XCTAssertNil(error, "Request auth does not return error when authorization is undetermined")
                     XCTAssertEqual(manager.requestedAuthorization, authorization, "Requests auth when necessary")
                 case (true, .AuthorizedWhenInUse, .WhenInUse),
-                     (true, .AuthorizedAlways,    .Always):
+                     (true, .AuthorizedAlways, _):
                     XCTAssertNil(error, "Request auth does not return error already authorized")
                     XCTAssertNil(manager.requestedAuthorization, "Request auth does nothing when already authorized")
-                case (true, .AuthorizedWhenInUse, .Always),
-                     (true, .AuthorizedAlways,    .WhenInUse):
+                case (true, .AuthorizedWhenInUse, .Always):
                     XCTAssertNotNil(error, "Request auth returns error when existing authorization does not match requested authorization")
                     XCTAssertNil(manager.requestedAuthorization, "Request auth does nothing when existing authorization does not match requested authorization")
                 }
