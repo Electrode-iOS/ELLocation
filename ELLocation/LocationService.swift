@@ -368,6 +368,11 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
     /// The underlying location manager's distance filter for the current state.
     private var coreLocationDistanceFilter: CLLocationDistance {
+        // To receive continuous updates, there must not be a distance filter.
+        guard updateFrequency != .Continuous else {
+            return kCLDistanceFilterNone
+        }
+
         // NOTE: A distance filter of half the accuracy allows some updates while the device is
         //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
         //       while the device is moving (so previous inaccuracies can be corrected).
