@@ -18,8 +18,6 @@ public enum ELLocationError: Int, NSErrorEnum {
     case AuthorizationDeniedOrRestricted
     /// The caller is asking for authorization 'always' but user has granted 'when in use'.
     case AuthorizationWhenInUse
-    /// The caller is asking for authorization 'when in use' but user has granted 'always'.
-    case AuthorizationAlways
     /// Location services are disabled.
     case LocationServicesDisabled
     
@@ -33,8 +31,6 @@ public enum ELLocationError: Int, NSErrorEnum {
             return "The user has denied location services in Settings or has been restricted from using them."
         case .AuthorizationWhenInUse:
             return "The user has granted permission to location services only when the app is in use."
-        case .AuthorizationAlways:
-            return "The user has granted permission to location services always, so use that or change it."
         case .LocationServicesDisabled:
             return "Location services are not enabled."
         }
