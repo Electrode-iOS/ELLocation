@@ -12,14 +12,16 @@ import CoreLocation
 import ELFoundation
 
 let ELLocationErrorDomain: String = "ELLocationErrorDomain"
+let NSLocationAlwaysUsageDescriptionKey = "NSLocationAlwaysUsageDescription"
+let NSLocationWhenInUseUsageDescriptionKey = "NSLocationWhenInUseUsageDescription"
 
 public enum ELLocationError: Int, NSErrorEnum {
     /// The user has denied access to location services or their device has been configured to restrict it.
     case AuthorizationDeniedOrRestricted
+    /// The callers is asking for authorization, but the corresponding description is missing from Info.plist
+    case UsageDescriptionMissing
     /// The caller is asking for authorization 'always' but user has granted 'when in use'.
     case AuthorizationWhenInUse
-    /// The caller is asking for authorization 'when in use' but user has granted 'always'.
-    case AuthorizationAlways
     /// Location services are disabled.
     case LocationServicesDisabled
     
@@ -31,10 +33,10 @@ public enum ELLocationError: Int, NSErrorEnum {
         switch self {
         case .AuthorizationDeniedOrRestricted:
             return "The user has denied location services in Settings or has been restricted from using them."
+        case .UsageDescriptionMissing:
+            return "No description for the requested usage authorization has been provided in the app."
         case .AuthorizationWhenInUse:
             return "The user has granted permission to location services only when the app is in use."
-        case .AuthorizationAlways:
-            return "The user has granted permission to location services always, so use that or change it."
         case .LocationServicesDisabled:
             return "Location services are not enabled."
         }
@@ -280,7 +282,11 @@ protocol ELCLLocationManager: AnyObject {
     weak var delegate: CLLocationManagerDelegate? { get set }
     
     func requestAlwaysAuthorization()
+    var alwaysUsageDescription: String? { get }
+
     func requestWhenInUseAuthorization()
+    var whenInUseUsageDescription: String? { get }
+
     func startUpdatingLocation()
     func stopUpdatingLocation()
     func startMonitoringSignificantLocationChanges()
@@ -294,6 +300,14 @@ extension CLLocationManager: ELCLLocationManager {
     
     var coreLocationAuthorizationStatus: CLAuthorizationStatus {
         return CLLocationManager.authorizationStatus()
+    }
+
+    var alwaysUsageDescription: String? {
+        return NSBundle.mainBundle().infoDictionary?[NSLocationAlwaysUsageDescriptionKey] as? String
+    }
+
+    var whenInUseUsageDescription: String? {
+        return NSBundle.mainBundle().infoDictionary?[NSLocationWhenInUseUsageDescriptionKey] as? String
     }
 }
 
@@ -477,9 +491,8 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         case .NotDetermined:
             requestAuth = true
         case .AuthorizedAlways:
-            if authorization != .Always {
-                return NSError(ELLocationError.AuthorizationAlways)
-            }
+            // Note: .AuthorizedAlways is good for both .Always and .WhenInUse
+            break
         case .AuthorizedWhenInUse:
             if authorization != .WhenInUse {
                 return NSError(ELLocationError.AuthorizationWhenInUse)
@@ -489,8 +502,14 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         if requestAuth {
             switch authorization {
             case .Always:
+                if manager.alwaysUsageDescription == nil {
+                    return NSError(ELLocationError.UsageDescriptionMissing)
+                }
                 manager.requestAlwaysAuthorization()
             case .WhenInUse:
+                if manager.whenInUseUsageDescription == nil {
+                    return NSError(ELLocationError.UsageDescriptionMissing)
+                }
                 manager.requestWhenInUseAuthorization()
             }
         }
