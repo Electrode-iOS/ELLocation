@@ -14,6 +14,8 @@ import CoreLocation
 class MockCLLocationManager: ELCLLocationManager {
     var coreLocationServicesEnabled: Bool = true
     var coreLocationAuthorizationStatus: CLAuthorizationStatus = .NotDetermined
+    var alwaysUsageDescription: String? = "Access to your location at all times is required!"
+    var whenInUseUsageDescription: String? = "Access to your location while using the app is required!"
     var requestedAuthorization: LocationAuthorization? = nil
 
     var desiredAccuracy: CLLocationAccuracy = kCLLocationAccuracyBest
@@ -248,40 +250,65 @@ class ELLocationTests: XCTestCase {
         for servicesEnabled in [true, false] {
             for authorizationStatus: CLAuthorizationStatus in [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways] {
                 for authorization: LocationAuthorization in [.WhenInUse, .Always] {
-                    testRequestAuth(servicesEnabled: servicesEnabled, authorizationStatus: authorizationStatus, authorization: authorization)
+                    for whenInUseMsg: String? in [nil, "When in use, please!"] {
+                        for alwaysMsg: String? in [nil, "Always, please!"] {
+                            testRequestAuth(servicesEnabled: servicesEnabled, authorizationStatus: authorizationStatus,
+                                authorization: authorization, whenInUseMsg: whenInUseMsg, alwaysMsg: alwaysMsg)
+                        }
+                    }
                 }
             }
         }
     }
 
-    func testRequestAuth(servicesEnabled servicesEnabled: Bool, authorizationStatus: CLAuthorizationStatus, authorization: LocationAuthorization) {
+    func testRequestAuth(servicesEnabled servicesEnabled: Bool, authorizationStatus: CLAuthorizationStatus, authorization: LocationAuthorization, whenInUseMsg: String?, alwaysMsg: String?) {
+
         let manager = MockCLLocationManager()
+        manager.coreLocationServicesEnabled = servicesEnabled
+        manager.coreLocationAuthorizationStatus = authorizationStatus
+        manager.whenInUseUsageDescription = whenInUseMsg
+        manager.alwaysUsageDescription = alwaysMsg
+
         let provider = LocationManager(manager: manager)
         let subject = LocationAuthorizationService(locationAuthorizationProvider: provider)
 
-        manager.withMockServicesEnabled(servicesEnabled) {
-            manager.withMockAuthorizationStatus(authorizationStatus) {
-                let error = subject.requestAuthorization(authorization)
+        let error = subject.requestAuthorization(authorization)
 
-                switch (servicesEnabled, authorizationStatus, authorization) {
-                case (false, _, _):
-                    XCTAssertNotNil(error, "Request auth returns error when location services are disabled")
-                case (true, .Denied, _):
-                    XCTAssertNotNil(error, "Request auth returns error when authorization is denied")
-                case (true, .Restricted, _):
-                    XCTAssertNotNil(error, "Request auth returns error when authorization is restricted")
-                case (true, .NotDetermined, _):
-                    XCTAssertNil(error, "Request auth does not return error when authorization is undetermined")
-                    XCTAssertEqual(manager.requestedAuthorization, authorization, "Requests auth when necessary")
-                case (true, .AuthorizedWhenInUse, .WhenInUse),
-                     (true, .AuthorizedAlways, _):
-                    XCTAssertNil(error, "Request auth does not return error already authorized")
-                    XCTAssertNil(manager.requestedAuthorization, "Request auth does nothing when already authorized")
-                case (true, .AuthorizedWhenInUse, .Always):
-                    XCTAssertNotNil(error, "Request auth returns error when existing authorization does not match requested authorization")
-                    XCTAssertNil(manager.requestedAuthorization, "Request auth does nothing when existing authorization does not match requested authorization")
-                }
-            }
+        if error != nil {
+            XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when an error is returned")
+        }
+
+        switch (servicesEnabled, authorizationStatus, authorization, whenInUseMsg, alwaysMsg) {
+
+        case (false, _, _, _, _):
+            XCTAssertNotNil(error, "An error is returned when location services are disabled")
+            XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when location services are disabled")
+
+        case (_, .Denied, _, _, _):
+            XCTAssertNotNil(error, "An error is returned when authorization has been denied")
+            XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when authorization has been denied")
+
+        case (_, .Restricted, _, _, _):
+            XCTAssertNotNil(error, "An error is returned when authorization is restricted")
+            XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when authorization is restricted")
+
+        case (_, .AuthorizedWhenInUse, .WhenInUse, _, _),
+             (_, .AuthorizedAlways, _, _, _):
+            XCTAssertNil(error, "An error is not returned already authorized")
+            XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when already authorized")
+
+        case (_, .AuthorizedWhenInUse, _, _, _):
+            XCTAssertNotNil(error, "An error is returned when existing authorization is less than requested authorization")
+            XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when existing authorization is less than requested authorization")
+
+        case (_, .NotDetermined, .WhenInUse, nil, _),
+             (_, .NotDetermined, .Always, _, nil):
+            XCTAssertNotNil(error, "An error is returned when usage description is missing")
+            XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when usage description is missing")
+
+        case (_, .NotDetermined, _, _, _):
+            XCTAssertNil(error, "An error is not returned when authorization is undetermined")
+            XCTAssertEqual(manager.requestedAuthorization, authorization, "Authorization is requested when authorization is undetermined")
         }
     }
 
