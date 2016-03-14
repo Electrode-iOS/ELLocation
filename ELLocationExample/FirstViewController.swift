@@ -20,7 +20,7 @@ class FirstViewController: UIViewController {
         let listener3: NSObject = NSObject()
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) { () -> Void in
-            let request = LocationUpdateRequest(accuracy: .Better) { (success, location, error) -> Void in
+            let request = LocationUpdateRequest(accuracy: .Better, updateFrequency: .Continuous) { (success, location, error) -> Void in
                 if success {
                     print("LISTENER 3: success!!!!")
                 } else {
@@ -46,7 +46,7 @@ class FirstViewController: UIViewController {
         var listener4: NSObject = NSObject()
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) { () -> Void in
-            let request = LocationUpdateRequest(accuracy: .Best) { (success, location, error) -> Void in
+            let request = LocationUpdateRequest(accuracy: .Best, updateFrequency: .Continuous) { (success, location, error) -> Void in
                 if success {
                     print("LISTENER 4: success!!!!")
                 } else {
@@ -76,7 +76,7 @@ class FirstViewController: UIViewController {
     }
 
     func startLocationUpdates() {
-        let request = LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in
+        let request = LocationUpdateRequest(accuracy: .Good, updateFrequency: .Continuous) { (success, location, error) -> Void in
             if success {
                 print("LISTENER 2: success!!!!")
             } else {
