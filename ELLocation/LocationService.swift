@@ -328,7 +328,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
 
     /// The monitoring mode for the current state.
-    private var monitoring: LocationMonitoring? {
+    private var monitoringMode: LocationMonitoring? {
         guard !allLocationListeners.isEmpty else {
             return nil
         }
@@ -353,7 +353,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
 
     /// The underlying location manager's desired accuracy for the current state.
-    private var coreLocationDesiredAccuracy: CLLocationAccuracy {
+    private var desiredAccuracy: CLLocationAccuracy {
         switch accuracy {
         case .Coarse:
             return kCLLocationAccuracyKilometer
@@ -367,7 +367,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
 
     /// The underlying location manager's distance filter for the current state.
-    private var coreLocationDistanceFilter: CLLocationDistance {
+    private var distanceFilter: CLLocationDistance {
         // To receive continuous updates, there must not be a distance filter.
         guard updateFrequency != .Continuous else {
             return kCLDistanceFilterNone
@@ -382,7 +382,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             // updates with an accuracy of ±5m in practice.
             return 2.0
         default:
-            return coreLocationDesiredAccuracy / 2
+            return desiredAccuracy / 2
         }
     }
 
@@ -500,12 +500,12 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         synchronized(self) {
             let manager = self.manager
 
-            manager.desiredAccuracy = self.coreLocationDesiredAccuracy
+            manager.desiredAccuracy = self.desiredAccuracy
 
             // Use a distance filter to ignore unnecessary updates so the app can sleep more often
-            manager.distanceFilter = self.coreLocationDistanceFilter
+            manager.distanceFilter = self.distanceFilter
 
-            if let monitoring = self.monitoring {
+            if let monitoring = self.monitoringMode {
                 switch monitoring {
                 case .SignificantUpdates:
                     manager.startMonitoringSignificantLocationChanges()
