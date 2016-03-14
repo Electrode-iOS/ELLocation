@@ -479,20 +479,20 @@ class ELLocationTests: XCTestCase {
         for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
             let done = expectationWithDescription("\(accuracy) test finished")
 
-            testContinuousUpdates(accuracy, then: { done.fulfill() })
+            testContinuousUpdates(accuracy, then: done.fulfill)
         }
 
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 
-    func testContinuousUpdates(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency = .Continuous, then: () -> Void) {
+    func testContinuousUpdates(accuracy: LocationAccuracy, then done: () -> Void) {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)
         let subject = LocationUpdateService(locationProvider: provider)
         let listener = NSObject()
 
         var responseReceived = false
-        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in
+        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: .Continuous) { (success, location, error) -> Void in
             responseReceived = true
         }
 
@@ -521,30 +521,25 @@ class ELLocationTests: XCTestCase {
                 // DON'T FORGET THIS! If the listener is dealloced, it will not receive callbacks
                 subject.deregisterListener(listener)
 
-                // Done
-                then()
+                done()
             }
         }
     }
 
     func testDiscreteUpdates() {
         // Note: .Best has a threshold of 0m which means it always acts like "continuous"
-        let thresholds: [LocationAccuracy:CLLocationDistance] = [.Coarse: 200, .Good: 100, .Better: 10, .Best: 0]
+        let thresholds: [LocationAccuracy:CLLocationDistance] = [.Coarse: 500, .Good: 50, .Better: 5, .Best: 2]
 
         for (accuracy, threshold) in thresholds {
             let done = expectationWithDescription("\(accuracy) test finished")
 
-            if threshold > 0 {
-                testDiscreteUpdates(accuracy, threshold: threshold, then: { done.fulfill() })
-            } else {
-                testContinuousUpdates(accuracy, updateFrequency: .ChangesOnly, then: { done.fulfill() })
-            }
+            testDiscreteUpdates(accuracy, threshold: threshold, then: done.fulfill)
         }
 
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 
-    func testDiscreteUpdates(accuracy: LocationAccuracy, threshold: CLLocationDistance, then: () -> Void) {
+    func testDiscreteUpdates(accuracy: LocationAccuracy, threshold: CLLocationDistance, then done: () -> Void) {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)
         let subject = LocationUpdateService(locationProvider: provider)
@@ -591,10 +586,53 @@ class ELLocationTests: XCTestCase {
                     // DON'T FORGET THIS! If the listener is dealloced, it will not receive callbacks
                     subject.deregisterListener(listener)
                 
-                    // Done
-                    then()
+                    done()
                 }
             }
         }
+    }
+
+    /// Verifies that rapidly-received location updates do not cause listeners to receive locations that
+    /// would otherwise be below their change threshold.
+    func testRapidLocationUpdates() {
+        let done = expectationWithDescription("test finished")
+        let manager = MockCLLocationManager()
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
+        let listener = NSObject()
+
+        let accuracy: LocationAccuracy = .Good
+        let threshold: CLLocationDistance = 50
+
+        var locationsReceived = 0
+        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: .ChangesOnly) { (success,_,_) in
+            XCTAssertTrue(success, "Location update must succeed")
+            locationsReceived += 1
+        }
+
+        // Add listener:
+        subject.registerListener(listener, request: request)
+
+        // Update location:
+        manager.mockMoveByAtLeast(threshold)
+
+        // Update location again by small amount before callbacks:
+        manager.mockMoveByAtLeast(0.1)
+
+        // Wait...
+        subject.waitForMockListenerCallbacks() {
+            // Verify that only a single location was received:
+            XCTAssertEqual(locationsReceived, 1, "Registered listener receives a single location")
+
+            // Wait...
+            subject.waitForMockListenerCallbacks() {
+                // Verify that only a single location was received:
+                XCTAssertEqual(locationsReceived, 1, "Registered listener receives a single location")
+                
+                done.fulfill()
+            }
+        }
+        
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 }
