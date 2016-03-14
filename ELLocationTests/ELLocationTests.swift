@@ -479,13 +479,13 @@ class ELLocationTests: XCTestCase {
         for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
             let done = expectationWithDescription("\(accuracy) test finished")
 
-            testContinuousUpdates(accuracy, then: { done.fulfill() })
+            testContinuousUpdates(accuracy, then: done.fulfill)
         }
 
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 
-    func testContinuousUpdates(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency = .Continuous, then: () -> Void) {
+    func testContinuousUpdates(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency = .Continuous, then done: () -> Void) {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)
         let subject = LocationUpdateService(locationProvider: provider)
@@ -521,8 +521,7 @@ class ELLocationTests: XCTestCase {
                 // DON'T FORGET THIS! If the listener is dealloced, it will not receive callbacks
                 subject.deregisterListener(listener)
 
-                // Done
-                then()
+                done()
             }
         }
     }
@@ -535,16 +534,16 @@ class ELLocationTests: XCTestCase {
             let done = expectationWithDescription("\(accuracy) test finished")
 
             if threshold > 0 {
-                testDiscreteUpdates(accuracy, threshold: threshold, then: { done.fulfill() })
+                testDiscreteUpdates(accuracy, threshold: threshold, then: done.fulfill)
             } else {
-                testContinuousUpdates(accuracy, updateFrequency: .ChangesOnly, then: { done.fulfill() })
+                testContinuousUpdates(accuracy, updateFrequency: .ChangesOnly, then: done.fulfill)
             }
         }
 
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 
-    func testDiscreteUpdates(accuracy: LocationAccuracy, threshold: CLLocationDistance, then: () -> Void) {
+    func testDiscreteUpdates(accuracy: LocationAccuracy, threshold: CLLocationDistance, then done: () -> Void) {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)
         let subject = LocationUpdateService(locationProvider: provider)
@@ -591,8 +590,7 @@ class ELLocationTests: XCTestCase {
                     // DON'T FORGET THIS! If the listener is dealloced, it will not receive callbacks
                     subject.deregisterListener(listener)
                 
-                    // Done
-                    then()
+                    done()
                 }
             }
         }
