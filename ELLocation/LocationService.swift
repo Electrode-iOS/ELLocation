@@ -45,14 +45,14 @@ public enum ELLocationError: Int, NSErrorEnum {
 More time and power is used going down this list as the system tries to provide a more accurate location,
 so be conservative according to your needs. `Good` should work well for most cases.
 */
-public enum LocationAccuracy: Int {
+public enum LocationAccuracy: Int, Comparable {
     case Coarse
     case Good
     case Better
     case Best
 }
 
-private func < (lhs: LocationAccuracy, rhs: LocationAccuracy) -> Bool {
+public func < (lhs: LocationAccuracy, rhs: LocationAccuracy) -> Bool {
     return lhs.rawValue < rhs.rawValue
 }
 
@@ -63,12 +63,12 @@ Callback frequency setting. Lowest power consumption is achieved by combining Lo
 - ChangesOnly: Notify listeners only when location changes. The granularity of this depends on the LocationAccuracy setting
 - Continuous:  Notify listeners at regular, frequent intervals (~1-2s)
 */
-public enum LocationUpdateFrequency: Int {
+public enum LocationUpdateFrequency: Int, Comparable {
     case ChangesOnly
     case Continuous
 }
 
-private func < (lhs: LocationUpdateFrequency, rhs: LocationUpdateFrequency) -> Bool {
+public func < (lhs: LocationUpdateFrequency, rhs: LocationUpdateFrequency) -> Bool {
     return lhs.rawValue < rhs.rawValue
 }
 
