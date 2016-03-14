@@ -83,11 +83,20 @@ public enum LocationAuthorization {
  There are two kinds of location monitoring in iOS: significant updates and standard location monitoring.
  Significant updates are more power efficient, but have limitations on accuracy and update frequency.
  */
-private enum LocationMonitoring {
+private enum LocationMonitoring: Comparable {
     /// Monitor for only "significant updates" to the user's location (using cell towers only)
     case SignificantUpdates
     /// Monitor for all updates to the user's location (using GPS, WiFi, etc)
     case Standard
+}
+
+private func < (lhs: LocationMonitoring, rhs: LocationMonitoring) -> Bool {
+    switch (lhs, rhs) {
+    case (.SignificantUpdates, .Standard):
+        return true
+    default:
+        return false
+    }
 }
 
 private extension LocationAccuracy {
@@ -305,35 +314,15 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         return manager.coreLocationAuthorizationStatus
     }
 
-    /// The accuracy, based on the current set of listener requests.
-    private var accuracy: LocationAccuracy {
-        let allAccuracies = allLocationListeners.map({ $0.request.accuracy })
-
-        guard let value = allAccuracies.maxElement(<) else {
-            return .Good
-        }
-
-        return value
-    }
-
-    /// The update frequency, based on the current set of listener requests.
-    private var updateFrequency: LocationUpdateFrequency {
-        let allUpdateFrequencies = allLocationListeners.map({ $0.request.updateFrequency })
-
-        guard let value = allUpdateFrequencies.maxElement(<) else {
-            return .ChangesOnly
-        }
-
-        return value
-    }
-
     /// The monitoring mode for the current state.
+    ///
+    /// This takes into account the listeners' monitoring modes and the authorization status.
     private var monitoringMode: LocationMonitoring? {
-        guard !allLocationListeners.isEmpty else {
+        guard authorizationStatus.allowsMonitoring else {
             return nil
         }
 
-        guard authorizationStatus.allowsMonitoring else {
+        guard let value = allLocationListeners.map({ $0.monitoringMode }).maxElement() else {
             return nil
         }
 
@@ -341,49 +330,27 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             return .Standard
         }
 
-        if accuracy.requiresStandardMonitoring {
-            return .Standard
-        }
-
-        if updateFrequency.requiresStandardMonitoring {
-            return .Standard
-        }
-
-        return .SignificantUpdates
+        return value
     }
 
-    /// The underlying location manager's desired accuracy for the current state.
+    /// The desired accuracy for the current state.
     private var desiredAccuracy: CLLocationAccuracy {
-        switch accuracy {
-        case .Coarse:
-            return kCLLocationAccuracyKilometer
-        case .Good:
+        // Note: CLLocationAccuracy is expressed as an allowable amount of error, so we want the "minimum" value.
+
+        guard let value = allLocationListeners.map({ $0.desiredAccuracy }).minElement() else {
             return kCLLocationAccuracyHundredMeters
-        case .Better:
-            return kCLLocationAccuracyNearestTenMeters
-        case .Best:
-            return kCLLocationAccuracyBest
         }
+
+        return value
     }
 
-    /// The underlying location manager's distance filter for the current state.
+    /// The distance filter for the current state.
     private var distanceFilter: CLLocationDistance {
-        // To receive continuous updates, there must not be a distance filter.
-        guard updateFrequency != .Continuous else {
+        guard let value = allLocationListeners.map({ $0.distanceFilter }).minElement() else {
             return kCLDistanceFilterNone
         }
 
-        // NOTE: A distance filter of half the accuracy allows some updates while the device is
-        //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
-        //       while the device is moving (so previous inaccuracies can be corrected).
-        switch accuracy {
-        case .Best:
-            // Two meters is good for best accuracy, which evaluates to -1.0 but typically generates
-            // updates with an accuracy of ±5m in practice.
-            return 2.0
-        default:
-            return desiredAccuracy / 2
-        }
+        return value
     }
 
     override convenience init() {
@@ -414,6 +381,52 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             self.request = request
         }
         
+        /// The monitoring mode for this listener
+        var monitoringMode: LocationMonitoring {
+            if request.accuracy.requiresStandardMonitoring {
+                return .Standard
+            }
+
+            if request.updateFrequency.requiresStandardMonitoring {
+                return .Standard
+            }
+
+            return .SignificantUpdates
+        }
+
+        /// The desired accuracy for this listener
+        var desiredAccuracy: CLLocationAccuracy {
+            switch request.accuracy {
+            case .Coarse:
+                return kCLLocationAccuracyKilometer
+            case .Good:
+                return kCLLocationAccuracyHundredMeters
+            case .Better:
+                return kCLLocationAccuracyNearestTenMeters
+            case .Best:
+                return kCLLocationAccuracyBest
+            }
+        }
+
+        /// The distance filter for this listener
+        var distanceFilter: CLLocationDistance {
+            guard request.updateFrequency != .Continuous else {
+                return kCLDistanceFilterNone
+            }
+
+            // NOTE: A distance filter of half the accuracy allows some updates while the device is
+            //       stationary (caused by GPS fluctuations) in an attempt to ensure timely updates
+            //       while the device is moving (so previous inaccuracies can be corrected).
+            switch request.accuracy {
+            case .Best:
+                // Two meters is good for best accuracy, which evaluates to -1.0 but typically generates
+                // updates with an accuracy of ±5m in practice.
+                return 2.0
+            default:
+                return desiredAccuracy / 2
+            }
+        }
+
         func shouldUpdateListenerForLocation(location: CLLocation) -> Bool {
             switch request.updateFrequency {
             case .Continuous:
