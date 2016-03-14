@@ -558,13 +558,12 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             let locationListeners = self.allLocationListeners
 
             for locationListener in locationListeners where locationListener.listener != nil {
-                // FIXME: previousCallbackLocation is assigned in the async block, but it is
-                // used in shouleUpdateListener() which creates a race condition.
                 if locationListener.shouldUpdateListenerForLocation(mostRecentLocation) {
+                    locationListener.previousCallbackLocation = mostRecentLocation
+
                     // Is it weird that the `response` handler can still receive callbacks even after the listener
                     // has been unregistered? I think that could happen with this design.
                     dispatch_async(dispatch_get_main_queue(), {
-                        locationListener.previousCallbackLocation = mostRecentLocation
                         locationListener.request.response(success: true, location: mostRecentLocation, error: nil)
                     })
                 }
@@ -579,7 +578,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             let locationListeners = self.allLocationListeners
 
             for locationListener in locationListeners where locationListener.listener != nil {
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                dispatch_async(dispatch_get_main_queue(), {
                     locationListener.request.response(success: false, location: nil, error: error)
                 })
             }

@@ -597,4 +597,48 @@ class ELLocationTests: XCTestCase {
             }
         }
     }
+
+    /// Verifies that rapidly-received location updates do not cause listeners to receive locations that
+    /// would otherwise be below their change threshold.
+    func testRapidLocationUpdates() {
+        let done = expectationWithDescription("test finished")
+        let manager = MockCLLocationManager()
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
+        let listener = NSObject()
+
+        let accuracy: LocationAccuracy = .Good
+        let threshold: CLLocationDistance = 50
+
+        var locationsReceived = 0
+        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: .ChangesOnly) { (success,_,_) in
+            XCTAssertTrue(success, "Location update must succeed")
+            locationsReceived += 1
+        }
+
+        // Add listener:
+        subject.registerListener(listener, request: request)
+
+        // Update location:
+        manager.mockMoveByAtLeast(threshold)
+
+        // Update location again by small amount before callbacks:
+        manager.mockMoveByAtLeast(0.1)
+
+        // Wait...
+        subject.waitForMockListenerCallbacks() {
+            // Verify that only a single location was received:
+            XCTAssertEqual(locationsReceived, 1, "Registered listener receives a single location")
+
+            // Wait...
+            subject.waitForMockListenerCallbacks() {
+                // Verify that only a single location was received:
+                XCTAssertEqual(locationsReceived, 1, "Registered listener receives a single location")
+                
+                done.fulfill()
+            }
+        }
+        
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+    }
 }
