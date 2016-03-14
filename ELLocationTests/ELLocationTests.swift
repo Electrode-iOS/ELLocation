@@ -485,14 +485,14 @@ class ELLocationTests: XCTestCase {
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 
-    func testContinuousUpdates(accuracy: LocationAccuracy, updateFrequency: LocationUpdateFrequency = .Continuous, then done: () -> Void) {
+    func testContinuousUpdates(accuracy: LocationAccuracy, then done: () -> Void) {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)
         let subject = LocationUpdateService(locationProvider: provider)
         let listener = NSObject()
 
         var responseReceived = false
-        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in
+        let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: .Continuous) { (success, location, error) -> Void in
             responseReceived = true
         }
 
@@ -528,16 +528,12 @@ class ELLocationTests: XCTestCase {
 
     func testDiscreteUpdates() {
         // Note: .Best has a threshold of 0m which means it always acts like "continuous"
-        let thresholds: [LocationAccuracy:CLLocationDistance] = [.Coarse: 200, .Good: 100, .Better: 10, .Best: 0]
+        let thresholds: [LocationAccuracy:CLLocationDistance] = [.Coarse: 500, .Good: 50, .Better: 5, .Best: 2]
 
         for (accuracy, threshold) in thresholds {
             let done = expectationWithDescription("\(accuracy) test finished")
 
-            if threshold > 0 {
-                testDiscreteUpdates(accuracy, threshold: threshold, then: done.fulfill)
-            } else {
-                testContinuousUpdates(accuracy, updateFrequency: .ChangesOnly, then: done.fulfill)
-            }
+            testDiscreteUpdates(accuracy, threshold: threshold, then: done.fulfill)
         }
 
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }

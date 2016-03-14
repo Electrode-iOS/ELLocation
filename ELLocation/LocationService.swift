@@ -365,13 +365,6 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
     
     private class LocationListener {
-        static let locationChangeThresholdMeters: [LocationAccuracy: CLLocationDistance] = [
-            .Best: 0,
-            .Better: 10,
-            .Good: 100,
-            .Coarse: 200
-        ]
-        
         weak var listener: AnyObject?
         var request: LocationUpdateRequest
         var previousCallbackLocation: CLLocation?
@@ -427,16 +420,14 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             }
         }
 
-        func shouldUpdateListenerForLocation(location: CLLocation) -> Bool {
-            switch request.updateFrequency {
-            case .Continuous:
+        func shouldUpdateListenerForLocation(currentLocation: CLLocation) -> Bool {
+            guard let previousLocation = previousCallbackLocation else {
                 return true
-            case .ChangesOnly:
-                if previousCallbackLocation == nil || previousCallbackLocation?.distanceFromLocation(location) >= LocationListener.locationChangeThresholdMeters[request.accuracy] {
-                    return true
-                }
-                return false
             }
+
+            let distance = previousLocation.distanceFromLocation(currentLocation)
+
+            return distance >= distanceFilter
         }
     }
     
