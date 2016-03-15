@@ -18,8 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        if let anError = LocationAuthorizationService().requestAuthorization(.WhenInUse) {
+        if let requestAuthError = LocationAuthorizationService().requestAuthorization(.WhenInUse) {
             //TODO: Client needs to process error and re-request auth
+            print("REQUEST AUTH: error requesting authorization. error is \(requestAuthError.localizedDescription)")
         } else {
             startLocationUpdates()
         }
