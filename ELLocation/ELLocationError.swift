@@ -8,7 +8,7 @@
 
 import ELFoundation
 
-let ELLocationErrorDomain: String = "ELLocationErrorDomain"
+public let ELLocationErrorDomain = "ELLocationErrorDomain"
 
 public enum ELLocationError: Int, NSErrorEnum {
     /// The user has denied access to location services or their device has been configured to restrict it.
@@ -21,7 +21,7 @@ public enum ELLocationError: Int, NSErrorEnum {
     case LocationServicesDisabled
 
     public var domain: String {
-        return "io.theholygrail.ELLocationError"
+        return ELLocationErrorDomain
     }
 
     public var errorDescription: String {
