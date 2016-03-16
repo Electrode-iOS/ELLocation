@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if let requestAuthError = LocationAuthorizationService().requestAuthorization(.WhenInUse) {
             //TODO: Client needs to process error and re-request auth
+            assert(requestAuthError.domain == ELLocationErrorDomain, "request authorization returned error with unexpected domain '\(requestAuthError.domain)'")
             print("REQUEST AUTH: error requesting authorization. error is \(requestAuthError.localizedDescription)")
         } else {
             startLocationUpdates()
