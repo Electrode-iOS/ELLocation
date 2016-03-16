@@ -220,6 +220,72 @@ class ELLocationTests: XCTestCase {
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 
+    func testAddListenerMoreThanOnce() {
+        let manager = MockCLLocationManager()
+
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
+        let listener = NSObject()
+
+        let done = expectationWithDescription("test finished")
+
+        var response1Received = false
+        let request1 = LocationUpdateRequest(accuracy: .Best, updateFrequency: .Continuous) { (_,_,_) in
+            response1Received = true
+        }
+
+        var response2Received = false
+        let request2 = LocationUpdateRequest(accuracy: .Best, updateFrequency: .Continuous) { (_,_,_) in
+            response2Received = true
+        }
+
+        // Add listener:
+        let error1 = subject.registerListener(listener, request:request1)
+        XCTAssertNil(error1)
+
+        // Add listener again with a new request:
+        let error2 = subject.registerListener(listener, request: request2)
+        XCTAssertNil(error2)
+
+        // Update location:
+        manager.mockMoveByAtLeast(1)
+
+        // Wait...
+        subject.waitForMockListenerCallbacks() {
+            // Verify that callback was NOT received by the first response handler:
+            XCTAssertFalse(response1Received, "First request no longer receives callback")
+
+            // Verify that callback was received by the second response handler:
+            XCTAssertTrue(response2Received, "Second request receives callback")
+
+            // Reset flags:
+            response1Received = false
+            response2Received = false
+
+            // Remove listener (once):
+            subject.deregisterListener(listener)
+
+            // Location monitoring should stop, since this was the only listener.
+            XCTAssertFalse(manager.updatingLocation, "Removing listener should remove all associated requests")
+            XCTAssertFalse(manager.monitoringSignificantLocationChanges, "Removing listener should remove all associated requests")
+
+            // Update location:
+            manager.mockMoveByAtLeast(1)
+
+            // Wait...
+            subject.waitForMockListenerCallbacks() {
+                // Verify that callback was NOT received by either response handler:
+                XCTAssertFalse(response1Received, "First request no longer receives callback")
+                XCTAssertFalse(response2Received, "Second request no longer receives callback")
+
+                // Done
+                done.fulfill()
+            }
+        }
+
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+    }
+
     func testWeakListenerRefs() {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)

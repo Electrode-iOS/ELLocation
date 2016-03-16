@@ -266,7 +266,9 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         let locationListener = LocationListener(listener: listener, request: request)
 
         synchronized(self) {
-            self.allLocationListeners.append(locationListener)
+            unsafeRemoveListener(listener)
+
+            allLocationListeners.append(locationListener)
         }
 
         updateLocationMonitoring()
@@ -276,15 +278,26 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
     func deregisterListener(listener: AnyObject) {
         synchronized(self) {
-            for (index, locationListener) in self.allLocationListeners.enumerate() {
-                if locationListener.listener === listener {
-                    self.allLocationListeners.removeAtIndex(index)
-                    break
-                }
-            }
+            unsafeRemoveListener(listener)
         }
 
         updateLocationMonitoring()
+    }
+
+    /**
+     Removes the (only) entry for listener from `allLocationListeners`, if one exists.
+
+     **This method is not threadsafe.** It may only safely be called from inside a `synchronized(self)` block.
+     */
+    private func unsafeRemoveListener(listener: AnyObject) {
+        let locationListeners = allLocationListeners
+
+        for (index, locationListener) in locationListeners.enumerate() {
+            if locationListener.listener === listener {
+                allLocationListeners.removeAtIndex(index)
+                break
+            }
+        }
     }
 
     // MARK: LocationAuthorizationProvider
