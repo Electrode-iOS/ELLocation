@@ -1,105 +1,16 @@
 //
-//  LocationService.swift
-//  LocationLocation
+//  LocationManager.swift
+//  ELLocation
 //
-//  Created by Sam Grover on 3/3/15.
-//  Copyright (c) 2015 WalmartLabs. All rights reserved.
+//  Created by Alex Johnson on 3/16/16.
+//  Copyright © 2016 WalmartLabs. All rights reserved.
 //
-
-import Foundation
-import CoreLocation
 
 import ELFoundation
+import CoreLocation
 
-let ELLocationErrorDomain: String = "ELLocationErrorDomain"
 let NSLocationAlwaysUsageDescriptionKey = "NSLocationAlwaysUsageDescription"
 let NSLocationWhenInUseUsageDescriptionKey = "NSLocationWhenInUseUsageDescription"
-
-public enum ELLocationError: Int, NSErrorEnum {
-    /// The user has denied access to location services or their device has been configured to restrict it.
-    case AuthorizationDeniedOrRestricted
-    /// The callers is asking for authorization, but the corresponding description is missing from Info.plist
-    case UsageDescriptionMissing
-    /// The caller is asking for authorization 'always' but user has granted 'when in use'.
-    case AuthorizationWhenInUse
-    /// Location services are disabled.
-    case LocationServicesDisabled
-    
-    public var domain: String {
-        return "io.theholygrail.ELLocationError"
-    }
-    
-    public var errorDescription: String {
-        switch self {
-        case .AuthorizationDeniedOrRestricted:
-            return "The user has denied location services in Settings or has been restricted from using them."
-        case .UsageDescriptionMissing:
-            return "No description for the requested usage authorization has been provided in the app."
-        case .AuthorizationWhenInUse:
-            return "The user has granted permission to location services only when the app is in use."
-        case .LocationServicesDisabled:
-            return "Location services are not enabled."
-        }
-    }
-}
-
-/**
-More time and power is used going down this list as the system tries to provide a more accurate location,
-so be conservative according to your needs. `Good` should work well for most cases.
-*/
-public enum LocationAccuracy: Int, Comparable {
-    case Coarse
-    case Good
-    case Better
-    case Best
-}
-
-public func < (lhs: LocationAccuracy, rhs: LocationAccuracy) -> Bool {
-    return lhs.rawValue < rhs.rawValue
-}
-
-/**
-Callback frequency setting. Lowest power consumption is achieved by combining LocationUpdateFrequency.ChangesOnly
- with LocationAccuracy.Coarse
-
-- ChangesOnly: Notify listeners only when location changes. The granularity of this depends on the LocationAccuracy setting
-- Continuous:  Notify listeners at regular, frequent intervals (~1-2s)
-*/
-public enum LocationUpdateFrequency: Int, Comparable {
-    case ChangesOnly
-    case Continuous
-}
-
-public func < (lhs: LocationUpdateFrequency, rhs: LocationUpdateFrequency) -> Bool {
-    return lhs.rawValue < rhs.rawValue
-}
-
-public enum LocationAuthorization {
-    /// Authorization for location services to be used only when the app is in use by the user.
-    case WhenInUse
-    /// Authorization for location services to be used at all times, even when the app is not in the foreground.
-    case Always
-}
-
-/**
- There are two kinds of location monitoring in iOS: significant updates and standard location monitoring.
- Significant updates are more power efficient, but have limitations on accuracy and update frequency.
- */
-private enum LocationMonitoring: Comparable {
-    /// Monitor for only "significant updates" to the user's location (using cell towers only)
-    case SignificantUpdates
-    /// Monitor for all updates to the user's location (using GPS, WiFi, etc)
-    case Standard
-}
-
-private func < (lhs: LocationMonitoring, rhs: LocationMonitoring) -> Bool {
-    switch (lhs, rhs) {
-    case (.SignificantUpdates, .Standard):
-        return true
-    default:
-        return false
-    }
-}
 
 private extension LocationAccuracy {
     /**
@@ -165,113 +76,12 @@ private extension CLAuthorizationStatus {
     }
 }
 
-// MARK: Location Authorization API
-
-// An internal protocol for a type that wants to provide location authorization.
-public protocol LocationAuthorizationProvider {
-    func requestAuthorization(authorization: LocationAuthorization) -> NSError?
-}
-
-// The interface for requesting location authorization
-public struct LocationAuthorizationService: LocationAuthorizationProvider {
-    let locationAuthorizationProvider: LocationAuthorizationProvider
-    
-    /**
-    Request the specified authorization.
-    
-    - parameter authorization: The authorization being requested.
-    - returns: An optional error that could happen when requesting authorization. See `ELLocationError`.
-    */
-    public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
-        return locationAuthorizationProvider.requestAuthorization(authorization)
-    }
-    
-    public init() {
-        self.init(locationAuthorizationProvider: LocationManager.shared)
-    }
-
-    init(locationAuthorizationProvider: LocationAuthorizationProvider) {
-        self.locationAuthorizationProvider = locationAuthorizationProvider
-    }
-}
-
-// MARK: Location Listener API
-
 /**
-This handler is called when a location is updated or if there is an error.
+ A custom protocol to break the tight coupling of `LocationManager` and `CLLocationManager`.
 
-- parameter success: `true` if an updated location is available. `false` if there was an error.
-- parameter location: The location if `success` is `true`. `nil` otherwise.
-- parameter error: The error if `success` is `false`. `nil` otherwise.
-*/
-public typealias LocationUpdateResponseHandler = (success: Bool, location: CLLocation?, error: NSError?) -> Void
-
-public struct LocationUpdateRequest {
-    let accuracy: LocationAccuracy
-    let updateFrequency: LocationUpdateFrequency
-    let response: LocationUpdateResponseHandler
-    
-    /**
-     Initializes a request to be used for registering for location updates.
-
-     - parameter accuracy: The accuracy desired by the listener. Since there can be multiple listeners, the framework endeavors to provide the highest level of accuracy registered. Default value is `.Good`
-     - parameter updateFrequency: The rate at which to notify the listener. Default value is `.Continuous`.
-     - parameter response: This closure is called when a update is received or if there's an error.
-     */
-    public init(accuracy: LocationAccuracy = .Good, updateFrequency: LocationUpdateFrequency = .ChangesOnly, response: LocationUpdateResponseHandler) {
-        self.accuracy = accuracy
-        self.response = response
-        self.updateFrequency = updateFrequency
-    }
-}
-
-// A protocol for a type that wants to provide location updates.
-public protocol LocationUpdateProvider {
-    func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError?
-    func deregisterListener(listener: AnyObject)
-}
-
-// The interface for requesting location updates. Listeners can register to be informed of location updates
-// They can request to be deregistered or will be deregistered automatically when they are dealloced.
-public struct LocationUpdateService: LocationUpdateProvider {
-    let locationProvider: LocationUpdateProvider
-    
-    /**
-    Registers a listener to receive location updates as per the parameters defined in the request.
-    
-    - parameter listener: The listener to register.
-    - parameter request: The parameters of the request.
-    - returns: An optional error that could happen when registering. See `ELLocationError`.
-    */
-    public func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
-        return locationProvider.registerListener(listener, request: request)
-    }
-    
-    /**
-    Deregisters a listener from receiving any more location updates.
-    
-    - parameter listener: The listener to deregister.
-    */
-    public func deregisterListener(listener: AnyObject) {
-        locationProvider.deregisterListener(listener)
-    }
-    
-    public init() {
-        self.init(locationProvider: LocationManager.shared)
-    }
-
-    init(locationProvider: LocationUpdateProvider) {
-        self.locationProvider = locationProvider
-    }
-}
-
-// MARK: Internal location manager class
-
-/// A custom protocol to break the tight coupling of `LocationManager` and
-/// `CLLocationManager`.
-///
-/// Note: Creating instance properties for `coreLocationServicesEnabled` and
-/// `coreLocationAuthorizationStatus` allows them to be mocked more easily.
+ Note: Creating instance properties for `coreLocationServicesEnabled` and `coreLocationAuthorizationStatus`
+ allows them to be mocked more easily.
+ */
 protocol ELCLLocationManager: AnyObject {
     /// A cover method for `CLLocationManager.locationServicesEnabled()`
     var coreLocationServicesEnabled: Bool { get }
@@ -280,7 +90,7 @@ protocol ELCLLocationManager: AnyObject {
     var desiredAccuracy: CLLocationAccuracy { get set }
     var distanceFilter: CLLocationDistance { get set }
     weak var delegate: CLLocationManagerDelegate? { get set }
-    
+
     func requestAlwaysAuthorization()
     var alwaysUsageDescription: String? { get }
 
@@ -297,7 +107,7 @@ extension CLLocationManager: ELCLLocationManager {
     var coreLocationServicesEnabled: Bool {
         return CLLocationManager.locationServicesEnabled()
     }
-    
+
     var coreLocationAuthorizationStatus: CLAuthorizationStatus {
         return CLLocationManager.authorizationStatus()
     }
@@ -312,14 +122,15 @@ extension CLLocationManager: ELCLLocationManager {
 }
 
 /**
-This is the internal class that is set up as a singleton that interfaces with `CLLocationManager` and adopts
-the protocols that define `ELLocation` services in the public API.
-*/
+ This is the internal class that is set up as a singleton that interfaces with `CLLocationManager` and adopts
+ the protocols that define `ELLocation` services in the public API.
+ */
 class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationProvider, CLLocationManagerDelegate {
-    private static let shared: LocationManager = LocationManager()
+    /// A shared singleton instance for internal use.
+    static let shared: LocationManager = LocationManager()
 
     // MARK: Properties, initializers and internal structures
-    
+
     private var manager: ELCLLocationManager
     private var allLocationListeners: [LocationListener]
 
@@ -370,14 +181,14 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     override convenience init() {
         self.init(manager: CLLocationManager())
     }
-    
+
     init(manager: ELCLLocationManager) {
         self.manager = manager
         self.allLocationListeners = [LocationListener]()
         super.init()
         manager.delegate = self
     }
-    
+
     private class LocationListener {
         weak var listener: AnyObject?
         var request: LocationUpdateRequest
@@ -387,7 +198,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             self.listener = listener
             self.request = request
         }
-        
+
         /// The monitoring mode for this listener
         var monitoringMode: LocationMonitoring {
             if request.accuracy.requiresStandardMonitoring {
@@ -444,16 +255,16 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             return distance >= distanceFilter
         }
     }
-    
+
     // MARK: LocationUpdateProvider
-    
+
     func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
         if let locationServicesError = checkIfLocationServicesEnabled() {
             return locationServicesError
         }
-        
+
         let locationListener = LocationListener(listener: listener, request: request)
-        
+
         synchronized(self) {
             self.allLocationListeners.append(locationListener)
         }
@@ -462,7 +273,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
         return nil
     }
-    
+
     func deregisterListener(listener: AnyObject) {
         synchronized(self) {
             for (index, locationListener) in self.allLocationListeners.enumerate() {
@@ -475,9 +286,9 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
         updateLocationMonitoring()
     }
-    
+
     // MARK: LocationAuthorizationProvider
-    
+
     func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
         if let locationServicesError = checkIfLocationServicesEnabled() {
             return locationServicesError
@@ -498,7 +309,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
                 return NSError(ELLocationError.AuthorizationWhenInUse)
             }
         }
-        
+
         if requestAuth {
             switch authorization {
             case .Always:
@@ -516,7 +327,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
         return nil
     }
-    
+
     // MARK: Internal Interface
 
     private func updateLocationMonitoring() {
@@ -571,7 +382,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
     }
 
     // MARK: CLLocationManagerDelegate
-    
+
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let mostRecentLocation = locations.last as CLLocation! else {
             return
@@ -595,7 +406,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
         cleanUpLocationListeners()
     }
-    
+
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
         synchronized(self) {
             let locationListeners = self.allLocationListeners
@@ -606,7 +417,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
                 })
             }
         }
-
+        
         cleanUpLocationListeners()
     }
     
