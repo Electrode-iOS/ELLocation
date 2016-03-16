@@ -107,6 +107,31 @@ extension LocationUpdateService {
     }
 }
 
+// Private extensions to access all enum cases:
+
+private extension CLAuthorizationStatus {
+    static var allCases: [CLAuthorizationStatus] {
+        return [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways]
+    }
+}
+
+private extension LocationAccuracy {
+    static var allCases: [LocationAccuracy] {
+        return [.Coarse, .Good, .Better, .Best]
+    }
+}
+
+private extension LocationAuthorization {
+    static var allCases: [LocationAuthorization] {
+        return [.WhenInUse, .Always]
+    }
+}
+private extension LocationUpdateFrequency {
+    static var allCases: [LocationUpdateFrequency] {
+        return [.ChangesOnly, .Continuous]
+    }
+}
+
 class ELLocationTests: XCTestCase {
     
     override func setUp() {
@@ -248,8 +273,8 @@ class ELLocationTests: XCTestCase {
 
     func testRequestAuth() {
         for servicesEnabled in [true, false] {
-            for authorizationStatus: CLAuthorizationStatus in [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways] {
-                for authorization: LocationAuthorization in [.WhenInUse, .Always] {
+            for authorizationStatus: CLAuthorizationStatus in CLAuthorizationStatus.allCases {
+                for authorization: LocationAuthorization in LocationAuthorization.allCases {
                     for whenInUseMsg: String? in [nil, "When in use, please!"] {
                         for alwaysMsg: String? in [nil, "Always, please!"] {
                             testRequestAuth(servicesEnabled: servicesEnabled, authorizationStatus: authorizationStatus,
@@ -318,9 +343,9 @@ class ELLocationTests: XCTestCase {
         // Monitoring is dependent on the authorization status, accuracy and update frequency. These nested for loops
         // allow the test to cover all possible combinations.
 
-        for authorizationStatus: CLAuthorizationStatus in [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways] {
-            for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
-                for updateFrequency: LocationUpdateFrequency in [.ChangesOnly, .Continuous] {
+        for authorizationStatus: CLAuthorizationStatus in CLAuthorizationStatus.allCases {
+            for accuracy: LocationAccuracy in LocationAccuracy.allCases {
+                for updateFrequency: LocationUpdateFrequency in LocationUpdateFrequency.allCases {
                     testLocationMonitoring(authorizationStatus: authorizationStatus, accuracy: accuracy, updateFrequency: updateFrequency)
                 }
             }
@@ -398,7 +423,7 @@ class ELLocationTests: XCTestCase {
     // MARK: Distance filter
 
     func testContinuousUpdatesDisablesDistanceFilter() {
-        for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
+        for accuracy: LocationAccuracy in LocationAccuracy.allCases {
             let manager = MockCLLocationManager()
             let provider = LocationManager(manager: manager)
             let subject = LocationUpdateService(locationProvider: provider)
@@ -490,7 +515,7 @@ class ELLocationTests: XCTestCase {
     // MARK: Accuracy in practice
 
     func testContinuousUpdates() {
-        for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
+        for accuracy: LocationAccuracy in LocationAccuracy.allCases {
             let done = expectationWithDescription("\(accuracy) test finished")
 
             testContinuousUpdates(accuracy, then: done.fulfill)
