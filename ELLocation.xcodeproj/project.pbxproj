@@ -18,10 +18,18 @@
 		2280E15E1ABB4BEC0026F13A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2280E15D1ABB4BEC0026F13A /* Images.xcassets */; };
 		2280E1611ABB4BEC0026F13A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2280E15F1ABB4BEC0026F13A /* LaunchScreen.xib */; };
 		2280E16D1ABB4BEC0026F13A /* ELLocationExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E16C1ABB4BEC0026F13A /* ELLocationExampleTests.swift */; };
-		2280E1751ABB4C380026F13A /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280E1741ABB4C380026F13A /* LocationService.swift */; };
 		2280E17E1ABB4D4B0026F13A /* ELLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* ELLocation.framework */; };
 		2280E17F1ABB4D4B0026F13A /* ELLocation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2280E0EA1ABB47860026F13A /* ELLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		46FBD85B1C232F7B0000E733 /* ELFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E9E981B8BDFB4000863F6 /* ELFoundation.framework */; };
+		B6EC54931C99C7D900B795D9 /* ELLocationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC54921C99C7D900B795D9 /* ELLocationError.swift */; };
+		B6EC54991C99C7E400B795D9 /* LocationAccuracy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC54981C99C7E400B795D9 /* LocationAccuracy.swift */; };
+		B6EC549B1C99C7F100B795D9 /* LocationUpdateFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC549A1C99C7F100B795D9 /* LocationUpdateFrequency.swift */; };
+		B6EC549D1C99C84600B795D9 /* LocationAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC549C1C99C84600B795D9 /* LocationAuthorization.swift */; };
+		B6EC549F1C99C86100B795D9 /* LocationMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC549E1C99C86100B795D9 /* LocationMonitoring.swift */; };
+		B6EC54A11C99C8CD00B795D9 /* LocationAuthorizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC54A01C99C8CD00B795D9 /* LocationAuthorizationService.swift */; };
+		B6EC54A31C99C8ED00B795D9 /* LocationUpdateRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC54A21C99C8ED00B795D9 /* LocationUpdateRequest.swift */; };
+		B6EC54A51C99C92F00B795D9 /* LocationUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC54A41C99C92F00B795D9 /* LocationUpdateService.swift */; };
+		B6EC54A71C99C9B000B795D9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC54A61C99C9B000B795D9 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,7 +117,15 @@
 		2280E1661ABB4BEC0026F13A /* ELLocationExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ELLocationExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2280E16B1ABB4BEC0026F13A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2280E16C1ABB4BEC0026F13A /* ELLocationExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ELLocationExampleTests.swift; sourceTree = "<group>"; };
-		2280E1741ABB4C380026F13A /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		B6EC54921C99C7D900B795D9 /* ELLocationError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ELLocationError.swift; sourceTree = "<group>"; };
+		B6EC54981C99C7E400B795D9 /* LocationAccuracy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationAccuracy.swift; sourceTree = "<group>"; };
+		B6EC549A1C99C7F100B795D9 /* LocationUpdateFrequency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdateFrequency.swift; sourceTree = "<group>"; };
+		B6EC549C1C99C84600B795D9 /* LocationAuthorization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationAuthorization.swift; sourceTree = "<group>"; };
+		B6EC549E1C99C86100B795D9 /* LocationMonitoring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationMonitoring.swift; sourceTree = "<group>"; };
+		B6EC54A01C99C8CD00B795D9 /* LocationAuthorizationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationAuthorizationService.swift; sourceTree = "<group>"; };
+		B6EC54A21C99C8ED00B795D9 /* LocationUpdateRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdateRequest.swift; sourceTree = "<group>"; };
+		B6EC54A41C99C92F00B795D9 /* LocationUpdateService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationUpdateService.swift; sourceTree = "<group>"; };
+		B6EC54A61C99C9B000B795D9 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,7 +209,15 @@
 		2280E0EC1ABB47860026F13A /* ELLocation */ = {
 			isa = PBXGroup;
 			children = (
-				2280E1741ABB4C380026F13A /* LocationService.swift */,
+				B6EC54921C99C7D900B795D9 /* ELLocationError.swift */,
+				B6EC54981C99C7E400B795D9 /* LocationAccuracy.swift */,
+				B6EC549C1C99C84600B795D9 /* LocationAuthorization.swift */,
+				B6EC54A01C99C8CD00B795D9 /* LocationAuthorizationService.swift */,
+				B6EC54A61C99C9B000B795D9 /* LocationManager.swift */,
+				B6EC549E1C99C86100B795D9 /* LocationMonitoring.swift */,
+				B6EC549A1C99C7F100B795D9 /* LocationUpdateFrequency.swift */,
+				B6EC54A21C99C8ED00B795D9 /* LocationUpdateRequest.swift */,
+				B6EC54A41C99C92F00B795D9 /* LocationUpdateService.swift */,
 				2280E0EF1ABB47860026F13A /* ELLocation.h */,
 				2280E0ED1ABB47860026F13A /* Supporting Files */,
 			);
@@ -360,7 +384,7 @@
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
-				ORGANIZATIONNAME = "WalmartLabs";
+				ORGANIZATIONNAME = WalmartLabs;
 				TargetAttributes = {
 					2280E0E91ABB47860026F13A = {
 						CreatedOnToolsVersion = 6.3;
@@ -474,7 +498,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2280E1751ABB4C380026F13A /* LocationService.swift in Sources */,
+				B6EC549D1C99C84600B795D9 /* LocationAuthorization.swift in Sources */,
+				B6EC54A51C99C92F00B795D9 /* LocationUpdateService.swift in Sources */,
+				B6EC54A71C99C9B000B795D9 /* LocationManager.swift in Sources */,
+				B6EC54A11C99C8CD00B795D9 /* LocationAuthorizationService.swift in Sources */,
+				B6EC54931C99C7D900B795D9 /* ELLocationError.swift in Sources */,
+				B6EC54A31C99C8ED00B795D9 /* LocationUpdateRequest.swift in Sources */,
+				B6EC549F1C99C86100B795D9 /* LocationMonitoring.swift in Sources */,
+				B6EC549B1C99C7F100B795D9 /* LocationUpdateFrequency.swift in Sources */,
+				B6EC54991C99C7E400B795D9 /* LocationAccuracy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
