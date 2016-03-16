@@ -13,7 +13,7 @@ import CoreLocation
 
 class MockCLLocationManager: ELCLLocationManager {
     var coreLocationServicesEnabled: Bool = true
-    var coreLocationAuthorizationStatus: CLAuthorizationStatus = .NotDetermined
+    var coreLocationAuthorizationStatus: CLAuthorizationStatus = .AuthorizedWhenInUse
     var alwaysUsageDescription: String? = "Access to your location at all times is required!"
     var whenInUseUsageDescription: String? = "Access to your location while using the app is required!"
     var requestedAuthorization: LocationAuthorization? = nil
@@ -403,21 +403,19 @@ class ELLocationTests: XCTestCase {
         let provider = LocationManager(manager: manager)
         let subject = LocationUpdateService(locationProvider: provider)
 
-        manager.withMockAuthorizationStatus(.AuthorizedWhenInUse) {
-            XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
+        XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
+
+        subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
+            XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
 
             subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
-                XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
-
-                subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
-                    XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
-                }
-
-                XCTAssertTrue(manager.updatingLocation, "Removing second listener does not stop location updates")
+                XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
             }
 
-            XCTAssertFalse(manager.updatingLocation, "Removing all listeners stop location updates")
+            XCTAssertTrue(manager.updatingLocation, "Removing second listener does not stop location updates")
         }
+
+        XCTAssertFalse(manager.updatingLocation, "Removing all listeners stop location updates")
     }
     
     // MARK: Distance filter
