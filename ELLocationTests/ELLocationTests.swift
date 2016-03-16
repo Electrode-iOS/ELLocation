@@ -145,10 +145,10 @@ class ELLocationTests: XCTestCase {
     }
     
     func testCalculateAndUpdateAccuracyCrash() {
-        LocationAuthorizationService().requestAuthorization(.WhenInUse)
-        LocationAuthorizationService().requestAuthorization(.Always)
-        
         let subject = LocationManager()
+
+        LocationAuthorizationService(locationAuthorizationProvider: subject).requestAuthorization(.WhenInUse)
+        LocationAuthorizationService(locationAuthorizationProvider: subject).requestAuthorization(.Always)
 
         // no crash here is a test success
         subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
