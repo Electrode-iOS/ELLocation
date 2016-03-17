@@ -11,9 +11,9 @@ import ELFoundation
 public let ELLocationErrorDomain = "ELLocationErrorDomain"
 
 public enum ELLocationError: Int, NSErrorEnum {
-    /// The user has denied access to location services.
-    case AuthorizationRestricted
     /// The user's device has been configured to restrict access to location services.
+    case AuthorizationRestricted
+    /// The user has denied access to location services.
     case AuthorizationDenied
     /// The callers is asking for authorization, but the corresponding description is missing from Info.plist
     case UsageDescriptionMissing
@@ -29,9 +29,9 @@ public enum ELLocationError: Int, NSErrorEnum {
     public var errorDescription: String {
         switch self {
         case .AuthorizationRestricted:
-            return "The user has denied location services in Settings."
-        case .AuthorizationDenied:
             return "The user has been restricted from using location services."
+        case .AuthorizationDenied:
+            return "The user has denied location services in Settings."
         case .UsageDescriptionMissing:
             return "No description for the requested usage authorization has been provided in the app."
         case .AuthorizationWhenInUse:
