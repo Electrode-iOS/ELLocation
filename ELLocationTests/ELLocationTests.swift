@@ -13,7 +13,7 @@ import CoreLocation
 
 class MockCLLocationManager: ELCLLocationManager {
     var coreLocationServicesEnabled: Bool = true
-    var coreLocationAuthorizationStatus: CLAuthorizationStatus = .NotDetermined
+    var coreLocationAuthorizationStatus: CLAuthorizationStatus = .AuthorizedWhenInUse
     var alwaysUsageDescription: String? = "Access to your location at all times is required!"
     var whenInUseUsageDescription: String? = "Access to your location while using the app is required!"
     var requestedAuthorization: LocationAuthorization? = nil
@@ -107,6 +107,31 @@ extension LocationUpdateService {
     }
 }
 
+// Private extensions to access all enum cases:
+
+private extension CLAuthorizationStatus {
+    static var allCases: [CLAuthorizationStatus] {
+        return [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways]
+    }
+}
+
+private extension LocationAccuracy {
+    static var allCases: [LocationAccuracy] {
+        return [.Coarse, .Good, .Better, .Best]
+    }
+}
+
+private extension LocationAuthorization {
+    static var allCases: [LocationAuthorization] {
+        return [.WhenInUse, .Always]
+    }
+}
+private extension LocationUpdateFrequency {
+    static var allCases: [LocationUpdateFrequency] {
+        return [.ChangesOnly, .Continuous]
+    }
+}
+
 class ELLocationTests: XCTestCase {
     
     override func setUp() {
@@ -120,10 +145,10 @@ class ELLocationTests: XCTestCase {
     }
     
     func testCalculateAndUpdateAccuracyCrash() {
-        LocationAuthorizationService().requestAuthorization(.WhenInUse)
-        LocationAuthorizationService().requestAuthorization(.Always)
-        
         let subject = LocationManager()
+
+        LocationAuthorizationService(locationAuthorizationProvider: subject).requestAuthorization(.WhenInUse)
+        LocationAuthorizationService(locationAuthorizationProvider: subject).requestAuthorization(.Always)
 
         // no crash here is a test success
         subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
@@ -195,6 +220,72 @@ class ELLocationTests: XCTestCase {
         waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
     }
 
+    func testAddListenerMoreThanOnce() {
+        let manager = MockCLLocationManager()
+
+        let provider = LocationManager(manager: manager)
+        let subject = LocationUpdateService(locationProvider: provider)
+        let listener = NSObject()
+
+        let done = expectationWithDescription("test finished")
+
+        var response1Received = false
+        let request1 = LocationUpdateRequest(accuracy: .Best, updateFrequency: .Continuous) { (_,_,_) in
+            response1Received = true
+        }
+
+        var response2Received = false
+        let request2 = LocationUpdateRequest(accuracy: .Best, updateFrequency: .Continuous) { (_,_,_) in
+            response2Received = true
+        }
+
+        // Add listener:
+        let error1 = subject.registerListener(listener, request:request1)
+        XCTAssertNil(error1)
+
+        // Add listener again with a new request:
+        let error2 = subject.registerListener(listener, request: request2)
+        XCTAssertNil(error2)
+
+        // Update location:
+        manager.mockMoveByAtLeast(1)
+
+        // Wait...
+        subject.waitForMockListenerCallbacks() {
+            // Verify that callback was NOT received by the first response handler:
+            XCTAssertFalse(response1Received, "First request no longer receives callback")
+
+            // Verify that callback was received by the second response handler:
+            XCTAssertTrue(response2Received, "Second request receives callback")
+
+            // Reset flags:
+            response1Received = false
+            response2Received = false
+
+            // Remove listener (once):
+            subject.deregisterListener(listener)
+
+            // Location monitoring should stop, since this was the only listener.
+            XCTAssertFalse(manager.updatingLocation, "Removing listener should remove all associated requests")
+            XCTAssertFalse(manager.monitoringSignificantLocationChanges, "Removing listener should remove all associated requests")
+
+            // Update location:
+            manager.mockMoveByAtLeast(1)
+
+            // Wait...
+            subject.waitForMockListenerCallbacks() {
+                // Verify that callback was NOT received by either response handler:
+                XCTAssertFalse(response1Received, "First request no longer receives callback")
+                XCTAssertFalse(response2Received, "Second request no longer receives callback")
+
+                // Done
+                done.fulfill()
+            }
+        }
+
+        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+    }
+
     func testWeakListenerRefs() {
         let manager = MockCLLocationManager()
         let provider = LocationManager(manager: manager)
@@ -248,8 +339,8 @@ class ELLocationTests: XCTestCase {
 
     func testRequestAuth() {
         for servicesEnabled in [true, false] {
-            for authorizationStatus: CLAuthorizationStatus in [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways] {
-                for authorization: LocationAuthorization in [.WhenInUse, .Always] {
+            for authorizationStatus: CLAuthorizationStatus in CLAuthorizationStatus.allCases {
+                for authorization: LocationAuthorization in LocationAuthorization.allCases {
                     for whenInUseMsg: String? in [nil, "When in use, please!"] {
                         for alwaysMsg: String? in [nil, "Always, please!"] {
                             testRequestAuth(servicesEnabled: servicesEnabled, authorizationStatus: authorizationStatus,
@@ -318,9 +409,9 @@ class ELLocationTests: XCTestCase {
         // Monitoring is dependent on the authorization status, accuracy and update frequency. These nested for loops
         // allow the test to cover all possible combinations.
 
-        for authorizationStatus: CLAuthorizationStatus in [.NotDetermined, .Denied, .Restricted, .AuthorizedWhenInUse, .AuthorizedAlways] {
-            for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
-                for updateFrequency: LocationUpdateFrequency in [.ChangesOnly, .Continuous] {
+        for authorizationStatus: CLAuthorizationStatus in CLAuthorizationStatus.allCases {
+            for accuracy: LocationAccuracy in LocationAccuracy.allCases {
+                for updateFrequency: LocationUpdateFrequency in LocationUpdateFrequency.allCases {
                     testLocationMonitoring(authorizationStatus: authorizationStatus, accuracy: accuracy, updateFrequency: updateFrequency)
                 }
             }
@@ -378,27 +469,25 @@ class ELLocationTests: XCTestCase {
         let provider = LocationManager(manager: manager)
         let subject = LocationUpdateService(locationProvider: provider)
 
-        manager.withMockAuthorizationStatus(.AuthorizedWhenInUse) {
-            XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
+        XCTAssertFalse(manager.updatingLocation, "Before adding listeners, location is not updating (GPS)")
+
+        subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
+            XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
 
             subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
-                XCTAssertTrue(manager.updatingLocation, "Adding a listener initiates location updates")
-
-                subject.withMockListener(accuracy: .Good, updateFrequency: .Continuous) {
-                    XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
-                }
-
-                XCTAssertTrue(manager.updatingLocation, "Removing second listener does not stop location updates")
+                XCTAssertTrue(manager.updatingLocation, "Adding a second listener continues location updates")
             }
 
-            XCTAssertFalse(manager.updatingLocation, "Removing all listeners stop location updates")
+            XCTAssertTrue(manager.updatingLocation, "Removing second listener does not stop location updates")
         }
+
+        XCTAssertFalse(manager.updatingLocation, "Removing all listeners stop location updates")
     }
     
     // MARK: Distance filter
 
     func testContinuousUpdatesDisablesDistanceFilter() {
-        for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
+        for accuracy: LocationAccuracy in LocationAccuracy.allCases {
             let manager = MockCLLocationManager()
             let provider = LocationManager(manager: manager)
             let subject = LocationUpdateService(locationProvider: provider)
@@ -490,7 +579,7 @@ class ELLocationTests: XCTestCase {
     // MARK: Accuracy in practice
 
     func testContinuousUpdates() {
-        for accuracy: LocationAccuracy in [.Coarse, .Good, .Better, .Best] {
+        for accuracy: LocationAccuracy in LocationAccuracy.allCases {
             let done = expectationWithDescription("\(accuracy) test finished")
 
             testContinuousUpdates(accuracy, then: done.fulfill)
