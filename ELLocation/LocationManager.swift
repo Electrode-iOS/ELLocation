@@ -307,35 +307,66 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             return locationServicesError
         }
 
-        var requestAuth = false
+        // Note: According to Apple's documentation, requesting authorization *only* works if the current status
+        // is not determined. In practice, that is not entirely true. If When-In-Use authorization was previously
+        // requested--and granted--the app may still request Always authorization (once). However, if the user
+        // choses not to allow When-In-Use authorization, or manually changes location authorization to "never"
+        // in their Settings, then the app loses this ability to request Always authorization.
+        //
+        // Example 1:
+        //
+        // 1. App requests `.WhenInUse` authorization.
+        // 2. iOS shows "Allow Access When in Use" alert.
+        // 3. User taps "Allow".
+        // 4. App requests `.Always` authorization.
+        // 5. iOS shows "Allow Access Always" alert.
+        //
+        // Example 2:
+        //
+        // 1. App requests `.WhenInUse` authorization.
+        // 2. iOS shows "Allow Access When in Use" alert.
+        // 3. User taps "Allow".
+        // 4. User opens Settings and changes location access to "Never".
+        // 5. App requests `.Always` authorization.
+        // 6. **Nothing happens**
+        //
+        // Example 3:
+        //
+        // 1. App requests `.WhenInUse` authorization.
+        // 2. iOS shows "Allow Access When in Use" alert.
+        // 3. User taps "Don't Allow".
+        // 4. App requests `.Always` authorization.
+        // 5. **Nothing happens**
+        //
+        // Because of how finicky this is, and that it goes contrary to the documentation, this code returns an
+        // error if "always" authorization is requested and the current authorization status is "when in use".
 
-        switch authorizationStatus {
-        case .Denied, .Restricted:
-            return NSError(ELLocationError.AuthorizationDeniedOrRestricted)
-        case .NotDetermined:
-            requestAuth = true
-        case .AuthorizedAlways:
-            // Note: .AuthorizedAlways is good for both .Always and .WhenInUse
+        switch (authorizationStatus, authorization) {
+
+        case (.Denied, _):
+            return NSError(ELLocationError.AuthorizationDenied)
+
+        case (.Restricted, _):
+            return NSError(ELLocationError.AuthorizationRestricted)
+
+        case (.AuthorizedWhenInUse, .Always):
+            return NSError(ELLocationError.AuthorizationWhenInUse)
+
+        case (.NotDetermined, .WhenInUse):
+            if manager.whenInUseUsageDescription == nil {
+                return NSError(ELLocationError.UsageDescriptionMissing)
+            }
+            manager.requestWhenInUseAuthorization()
+
+        case (.NotDetermined, .Always):
+            if manager.alwaysUsageDescription == nil {
+                return NSError(ELLocationError.UsageDescriptionMissing)
+            }
+            manager.requestAlwaysAuthorization()
+
+        default:
+            // We already have the desired authorization (or higher).
             break
-        case .AuthorizedWhenInUse:
-            if authorization != .WhenInUse {
-                return NSError(ELLocationError.AuthorizationWhenInUse)
-            }
-        }
-
-        if requestAuth {
-            switch authorization {
-            case .Always:
-                if manager.alwaysUsageDescription == nil {
-                    return NSError(ELLocationError.UsageDescriptionMissing)
-                }
-                manager.requestAlwaysAuthorization()
-            case .WhenInUse:
-                if manager.whenInUseUsageDescription == nil {
-                    return NSError(ELLocationError.UsageDescriptionMissing)
-                }
-                manager.requestWhenInUseAuthorization()
-            }
         }
 
         return nil
