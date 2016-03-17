@@ -294,6 +294,40 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             return locationServicesError
         }
 
+        // Note: According to Apple's documentation, requesting authorization *only* works if the current status
+        // is not determined. In practice, that is not entirely true. If When-In-Use authorization was previously
+        // requested--and granted--the app may still request Always authorization (once). However, if the user
+        // choses not to allow When-In-Use authorization, or manually changes location authorization to "never"
+        // in their Settings, then the app loses this ability to request Always authorization.
+        //
+        // Example 1:
+        //
+        // 1. App requests `.WhenInUse` authorization.
+        // 2. iOS shows "Allow Access When in Use" alert.
+        // 3. User taps "Allow".
+        // 4. App requests `.Always` authorization.
+        // 5. iOS shows "Allow Access Always" alert.
+        //
+        // Example 2:
+        //
+        // 1. App requests `.WhenInUse` authorization.
+        // 2. iOS shows "Allow Access When in Use" alert.
+        // 3. User taps "Allow".
+        // 4. User opens Settings and changes location access to "Never".
+        // 5. App requests `.Always` authorization.
+        // 6. **Nothing happens**
+        //
+        // Example 3:
+        //
+        // 1. App requests `.WhenInUse` authorization.
+        // 2. iOS shows "Allow Access When in Use" alert.
+        // 3. User taps "Don't Allow".
+        // 4. App requests `.Always` authorization.
+        // 5. **Nothing happens**
+        //
+        // Because of how finicky this is, and that it goes contrary to the documentation, this code returns an
+        // error if "always" authorization is requested and the current authorization status is "when in use".
+
         var requestAuth = false
 
         switch authorizationStatus {
