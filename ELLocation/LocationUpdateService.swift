@@ -19,6 +19,9 @@ public struct LocationUpdateService: LocationUpdateProvider {
 
     /**
      Registers a listener to receive location updates as per the parameters defined in the request.
+     
+     A listener may only be registered with one request at a time. If a listener is registered more than once,
+     previously-registered requests will be discarded.
 
      - parameter listener: The listener to register.
      - parameter request: The parameters of the request.
