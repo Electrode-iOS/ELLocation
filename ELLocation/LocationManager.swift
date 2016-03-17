@@ -328,37 +328,32 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         // Because of how finicky this is, and that it goes contrary to the documentation, this code returns an
         // error if "always" authorization is requested and the current authorization status is "when in use".
 
-        var requestAuth = false
+        switch (authorizationStatus, authorization) {
 
-        switch authorizationStatus {
-        case .Denied:
+        case (.Denied, _):
             return NSError(ELLocationError.AuthorizationDenied)
-        case .Restricted:
-            return NSError(ELLocationError.AuthorizationRestricted)
-        case .NotDetermined:
-            requestAuth = true
-        case .AuthorizedAlways:
-            // Note: .AuthorizedAlways is good for both .Always and .WhenInUse
-            break
-        case .AuthorizedWhenInUse:
-            if authorization != .WhenInUse {
-                return NSError(ELLocationError.AuthorizationWhenInUse)
-            }
-        }
 
-        if requestAuth {
-            switch authorization {
-            case .Always:
-                if manager.alwaysUsageDescription == nil {
-                    return NSError(ELLocationError.UsageDescriptionMissing)
-                }
-                manager.requestAlwaysAuthorization()
-            case .WhenInUse:
-                if manager.whenInUseUsageDescription == nil {
-                    return NSError(ELLocationError.UsageDescriptionMissing)
-                }
-                manager.requestWhenInUseAuthorization()
+        case (.Restricted, _):
+            return NSError(ELLocationError.AuthorizationRestricted)
+
+        case (.AuthorizedWhenInUse, .Always):
+            return NSError(ELLocationError.AuthorizationWhenInUse)
+
+        case (.NotDetermined, .WhenInUse):
+            if manager.whenInUseUsageDescription == nil {
+                return NSError(ELLocationError.UsageDescriptionMissing)
             }
+            manager.requestWhenInUseAuthorization()
+
+        case (.NotDetermined, .Always):
+            if manager.alwaysUsageDescription == nil {
+                return NSError(ELLocationError.UsageDescriptionMissing)
+            }
+            manager.requestAlwaysAuthorization()
+
+        default:
+            // We already have the desired authorization (or higher).
+            break
         }
 
         return nil
