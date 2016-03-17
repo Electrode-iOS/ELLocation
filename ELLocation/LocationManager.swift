@@ -331,8 +331,10 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         var requestAuth = false
 
         switch authorizationStatus {
-        case .Denied, .Restricted:
-            return NSError(ELLocationError.AuthorizationDeniedOrRestricted)
+        case .Denied:
+            return NSError(ELLocationError.AuthorizationDenied)
+        case .Restricted:
+            return NSError(ELLocationError.AuthorizationRestricted)
         case .NotDetermined:
             requestAuth = true
         case .AuthorizedAlways:
