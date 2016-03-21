@@ -208,7 +208,7 @@ class ELLocationTests: XCTestCase {
             }
         }
         
-        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+        waitForExpectationsWithTimeout(5) { _ in }
     }
 
     func testAddListenerMoreThanOnce() {
@@ -274,7 +274,7 @@ class ELLocationTests: XCTestCase {
             }
         }
 
-        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+        waitForExpectationsWithTimeout(5) { _ in }
     }
 
     func testWeakListenerRefs() {
@@ -324,7 +324,7 @@ class ELLocationTests: XCTestCase {
             }
         }
 
-        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+        waitForExpectationsWithTimeout(5) { _ in }
     }
     
     // MARK: Request authorization
@@ -585,7 +585,7 @@ class ELLocationTests: XCTestCase {
             testContinuousUpdates(accuracy, then: done.fulfill)
         }
 
-        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+        waitForExpectationsWithTimeout(5) { _ in }
     }
 
     func testContinuousUpdates(accuracy: LocationAccuracy, then done: () -> Void) {
@@ -640,7 +640,7 @@ class ELLocationTests: XCTestCase {
             testDiscreteUpdates(accuracy, threshold: threshold, then: done.fulfill)
         }
 
-        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+        waitForExpectationsWithTimeout(5) { _ in }
     }
 
     func testDiscreteUpdates(accuracy: LocationAccuracy, threshold: CLLocationDistance, then done: () -> Void) {
@@ -739,6 +739,6 @@ class ELLocationTests: XCTestCase {
             }
         }
         
-        waitForExpectationsWithTimeout(0.1) { (error: NSError?) -> Void in }
+        waitForExpectationsWithTimeout(5) { _ in }
     }
 }
