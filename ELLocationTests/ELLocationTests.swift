@@ -552,16 +552,16 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that desired accuracy increases:
 
-        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (success, location, error) -> Void in })
+        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (_,_,_) -> Void in })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyKilometer)
 
-        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (success, location, error) -> Void in })
+        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (_,_,_) -> Void in })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
 
-        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (success, location, error) -> Void in })
+        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (_,_,_) -> Void in })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
 
-        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (success, location, error) -> Void in })
+        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (_,_,_) -> Void in })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
 
         // Remove listeners from lowest to highest accuracy and verify that desired accuracy DOES NOT CHANGE:
