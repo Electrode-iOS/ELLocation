@@ -143,16 +143,6 @@ class ELLocationTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
-    func testCalculateAndUpdateAccuracyCrash() {
-        let subject = LocationManager()
-
-        LocationAuthorizationService(locationAuthorizationProvider: subject).requestAuthorization(.WhenInUse)
-        LocationAuthorizationService(locationAuthorizationProvider: subject).requestAuthorization(.Always)
-
-        // no crash here is a test success
-        subject.locationManager(CLLocationManager(), didUpdateLocations: [CLLocation(latitude: 42, longitude: 42)])
-    }
 
     // MARK: Listeners
     
