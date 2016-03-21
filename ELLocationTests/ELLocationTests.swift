@@ -178,7 +178,8 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        subject.registerListener(listener, request:request)
+        let error = subject.registerListener(listener, request:request)
+        XCTAssertNil(error)
         
         // Update location:
         manager.mockMoveByAtLeast(5)
@@ -292,7 +293,8 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        subject.registerListener(listener!, request:request)
+        let error = subject.registerListener(listener!, request:request)
+        XCTAssertNil(error)
 
         // Update location:
         manager.mockMoveByAtLeast(5)
@@ -502,16 +504,20 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that distance filter decreases:
 
-        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { _,_,_ in })
+        let error1 = subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { _,_,_ in })
+        XCTAssertNil(error1)
         XCTAssertEqual(manager.distanceFilter, 500)
 
-        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { _,_,_ in })
+        let error2 = subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { _,_,_ in })
+        XCTAssertNil(error2)
         XCTAssertEqual(manager.distanceFilter, 50)
 
-        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { _,_,_ in })
+        let error3 = subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { _,_,_ in })
+        XCTAssertNil(error3)
         XCTAssertEqual(manager.distanceFilter, 5)
 
-        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { _,_,_ in })
+        let error4 = subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { _,_,_ in })
+        XCTAssertNil(error4)
         XCTAssertEqual(manager.distanceFilter, 2)
 
         // Remove listeners from lowest to highest accuracy and verify that distance filter DOES NOT CHANGE:
@@ -542,16 +548,20 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that desired accuracy increases:
 
-        subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (_,_,_) -> Void in })
+        let error1 = subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (_,_,_) -> Void in })
+        XCTAssertNil(error1)
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyKilometer)
 
-        subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (_,_,_) -> Void in })
+        let error2 = subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (_,_,_) -> Void in })
+        XCTAssertNil(error2)
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
 
-        subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (_,_,_) -> Void in })
+        let error3 = subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (_,_,_) -> Void in })
+        XCTAssertNil(error3)
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
 
-        subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (_,_,_) -> Void in })
+        let error4 = subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (_,_,_) -> Void in })
+        XCTAssertNil(error4)
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
 
         // Remove listeners from lowest to highest accuracy and verify that desired accuracy DOES NOT CHANGE:
@@ -590,7 +600,8 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        subject.registerListener(listener, request:request)
+        let error = subject.registerListener(listener, request:request)
+        XCTAssertNil(error)
 
         // Update location:
         manager.mockMoveByAtLeast(0.1)
@@ -644,7 +655,8 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        subject.registerListener(listener, request: request)
+        let error = subject.registerListener(listener, request:request)
+        XCTAssertNil(error)
 
         // Update location:
         manager.mockMoveByAtLeast(0.001)
@@ -704,7 +716,8 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        subject.registerListener(listener, request: request)
+        let error = subject.registerListener(listener, request:request)
+        XCTAssertNil(error)
 
         // Update location:
         manager.mockMoveByAtLeast(threshold)

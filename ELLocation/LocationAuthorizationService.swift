@@ -21,6 +21,7 @@ public struct LocationAuthorizationService: LocationAuthorizationProvider {
      - parameter authorization: The authorization being requested.
      - returns: An optional error that could happen when requesting authorization. See `ELLocationError`.
      */
+    @warn_unused_result
     public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
         return locationAuthorizationProvider.requestAuthorization(authorization)
     }
