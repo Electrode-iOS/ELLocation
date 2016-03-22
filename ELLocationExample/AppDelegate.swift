@@ -28,9 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //TODO: Client needs to process error and re-request auth
             assert(requestAuthError.domain == ELLocationErrorDomain, "request authorization returned error with unexpected domain '\(requestAuthError.domain)'")
             print("REQUEST AUTH: error requesting authorization. error is \(requestAuthError.localizedDescription)")
-        } else {
-            startLocationUpdates()
+            return
         }
+
+        startLocationUpdates()
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -72,8 +73,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Register the listener
         if let addListenerError = LocationUpdateService().registerListener(self, request: request) {
             print("LISTENER 1: error in adding the listener. error is \(addListenerError.localizedDescription)")
-        } else {
-            print("LISTENER 1 ADDED")
+            return
         }
+
+        print("LISTENER 1 ADDED")
     }
 }

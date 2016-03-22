@@ -36,10 +36,11 @@ class FirstViewController: UIViewController {
             
             if let requestError = LocationUpdateService().registerListener(listener3, request: request) {
                 print("LISTENER 3: error in making request. error is \(requestError.localizedDescription)")
-            } else {
-                print("LISTENER 3 ADDED")
+                return
             }
-            
+
+            print("LISTENER 3 ADDED")
+
             // Schedule removal after some time seconds
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5_000_000_000), dispatch_get_main_queue()) { () -> Void in
                 print("REMOVING LISTENER 3")
@@ -64,10 +65,11 @@ class FirstViewController: UIViewController {
             
             if let requestError = LocationUpdateService().registerListener(listener4, request: request) {
                 print("LISTENER 4: error in making request. error is \(requestError.localizedDescription)")
-            } else {
-                print("LISTENER 4 ADDED")
+                return
             }
-            
+
+            print("LISTENER 4 ADDED")
+
             // Schedule removal after some time seconds
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10_000_000_000), dispatch_get_main_queue()) { () -> Void in
                 print("LETTING LISTENER 4 BE DEALLOCED")
@@ -94,10 +96,11 @@ class FirstViewController: UIViewController {
         
         if let requestError = LocationUpdateService().registerListener(self, request: request) {
             print("LISTENER 2: error in making request. error is \(requestError.localizedDescription)")
-        } else {
-            print("LISTENER 2 ADDED")
+            return
         }
-        
+
+        print("LISTENER 2 ADDED")
+
         // Schedule removal after some time seconds
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 15_000_000_000), dispatch_get_main_queue()) { () -> Void in
             print("REMOVING LISTENER 2")
