@@ -18,6 +18,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
+        requestLocationAuthorization()
+
+        return true
+    }
+
+    private func requestLocationAuthorization() {
         if let requestAuthError = LocationAuthorizationService().requestAuthorization(.WhenInUse) {
             //TODO: Client needs to process error and re-request auth
             assert(requestAuthError.domain == ELLocationErrorDomain, "request authorization returned error with unexpected domain '\(requestAuthError.domain)'")
@@ -25,8 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             startLocationUpdates()
         }
-        
-        return true
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -72,6 +76,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("LISTENER 1 ADDED")
         }
     }
-
 }
-

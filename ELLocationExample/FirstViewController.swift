@@ -14,9 +14,13 @@ class FirstViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        startLocationUpdates()
-        
+
+        startListener2()
+        startListener3()
+        startListener4()
+    }
+
+    private func startListener3() {
         let listener3: NSObject = NSObject()
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) { () -> Void in
@@ -42,7 +46,9 @@ class FirstViewController: UIViewController {
                 LocationUpdateService().deregisterListener(listener3)
             }
         }
-        
+    }
+
+    private func startListener4() {
         var listener4: NSObject = NSObject()
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) { () -> Void in
@@ -75,7 +81,7 @@ class FirstViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    func startLocationUpdates() {
+    private func startListener2() {
         let request = LocationUpdateRequest(accuracy: .Good, updateFrequency: .Continuous) { (success, location, error) -> Void in
             if success {
                 print("LISTENER 2: success!!!!")
