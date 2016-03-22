@@ -24,7 +24,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func requestLocationAuthorization() {
-        if let requestAuthError = LocationAuthorizationService().requestAuthorization(.WhenInUse) {
+        do {
+            try LocationAuthorizationService().requestAuthorization(.WhenInUse)
+        } catch let requestAuthError as NSError {
             //TODO: Client needs to process error and re-request auth
             assert(requestAuthError.domain == ELLocationErrorDomain, "request authorization returned error with unexpected domain '\(requestAuthError.domain)'")
             print("REQUEST AUTH: error requesting authorization. error is \(requestAuthError.localizedDescription)")
@@ -71,7 +73,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         // Register the listener
-        if let addListenerError = LocationUpdateService().registerListener(self, request: request) {
+        do {
+            try LocationUpdateService().registerListener(self, request: request)
+        } catch let addListenerError as NSError {
             print("LISTENER 1: error in adding the listener. error is \(addListenerError.localizedDescription)")
             return
         }

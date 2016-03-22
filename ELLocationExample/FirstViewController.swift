@@ -33,8 +33,10 @@ class FirstViewController: UIViewController {
                     }
                 }
             }
-            
-            if let requestError = LocationUpdateService().registerListener(listener3, request: request) {
+
+            do {
+                try LocationUpdateService().registerListener(listener3, request: request)
+            } catch let requestError as NSError  {
                 print("LISTENER 3: error in making request. error is \(requestError.localizedDescription)")
                 return
             }
@@ -62,8 +64,10 @@ class FirstViewController: UIViewController {
                     }
                 }
             }
-            
-            if let requestError = LocationUpdateService().registerListener(listener4, request: request) {
+
+            do {
+                try LocationUpdateService().registerListener(listener4, request: request)
+            } catch let requestError as NSError {
                 print("LISTENER 4: error in making request. error is \(requestError.localizedDescription)")
                 return
             }
@@ -93,8 +97,10 @@ class FirstViewController: UIViewController {
                 }
             }
         }
-        
-        if let requestError = LocationUpdateService().registerListener(self, request: request) {
+
+        do {
+            try LocationUpdateService().registerListener(self, request: request)
+        } catch let requestError as NSError {
             print("LISTENER 2: error in making request. error is \(requestError.localizedDescription)")
             return
         }

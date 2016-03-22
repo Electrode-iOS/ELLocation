@@ -70,6 +70,42 @@ class MockCLLocationManager: ELCLLocationManager {
 
 // Convenience methods for testing:
 
+/**
+ Similar to `XCTAssertThrows()`, but for Swift errors, not `NSException`s.
+ */
+public func XCTAssertSwiftThrows(expression: () throws -> Void, _ message: String = "Expresssion should throw error", file: String = __FILE__, line: UInt = __LINE__) {
+    do {
+        try expression()
+        XCTFail(message, file: file, line: line)
+    } catch {
+        // OK
+    }
+}
+
+/**
+ Similar to `XCTAssertNoThrow()` but for Swift errors, not `NSException`s.
+ */
+public func XCTAssertSwiftNoThrow(expression: () throws -> Void, _ message: String = "Expression should not throw error", file: String = __FILE__, line: UInt = __LINE__) {
+    do {
+        try expression()
+        // OK
+    } catch let error {
+        XCTFail("\(message) [caught error: \(error)]", file: file, line: line)
+    }
+}
+
+/**
+ Converts a potentially-throwing expression to one that returns an optional error.
+ */
+func catch_error(expression: () throws -> Void) -> ErrorType? {
+    do {
+        try expression()
+        return nil
+    } catch let error {
+        return error
+    }
+}
+
 extension MockCLLocationManager {
     func withMockServicesEnabled(enabled: Bool, closure: () -> Void) {
         let oldEnabled = coreLocationServicesEnabled
@@ -91,8 +127,12 @@ extension LocationUpdateService {
         let listener = NSObject()
         let request = LocationUpdateRequest(accuracy: accuracy, updateFrequency: updateFrequency) { (success, location, error) -> Void in }
 
-        let error = registerListener(listener, request: request)
-        XCTAssertNil(error, "Must be able to register a mock listener")
+        do {
+            try registerListener(listener, request: request)
+        } catch let error {
+            XCTAssertNil(error, "Must be able to register a mock listener")
+            return
+        }
 
         closure()
 
@@ -126,6 +166,7 @@ private extension LocationAuthorization {
         return [.WhenInUse, .Always]
     }
 }
+
 private extension LocationUpdateFrequency {
     static var allCases: [LocationUpdateFrequency] {
         return [.ChangesOnly, .Continuous]
@@ -154,13 +195,15 @@ class ELLocationTests: XCTestCase {
         let request = LocationUpdateRequest() { (success, location, error) -> Void in }
 
         manager.withMockServicesEnabled(false) {
-            let error1 = subject.registerListener(listener, request: request)
-            XCTAssertNotNil(error1, "Register returns error when location services are disabled")
+            XCTAssertSwiftThrows({
+                try subject.registerListener(listener, request: request)
+            }, "Register throws error when location services are disabled")
         }
 
         manager.withMockServicesEnabled(true) {
-            let error2 = subject.registerListener(listener, request: request)
-            XCTAssertNil(error2, "Register does not return error when location services are enabled")
+            XCTAssertSwiftNoThrow({
+                try subject.registerListener(listener, request: request)
+            }, "Register does not throw error when location services are enabled")
         }
     }
     
@@ -178,9 +221,8 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        let error = subject.registerListener(listener, request:request)
-        XCTAssertNil(error)
-        
+        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
+
         // Update location:
         manager.mockMoveByAtLeast(5)
 
@@ -231,12 +273,10 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        let error1 = subject.registerListener(listener, request:request1)
-        XCTAssertNil(error1)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request1) })
 
         // Add listener again with a new request:
-        let error2 = subject.registerListener(listener, request: request2)
-        XCTAssertNil(error2)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request: request2) })
 
         // Update location:
         manager.mockMoveByAtLeast(1)
@@ -293,8 +333,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        let error = subject.registerListener(listener!, request:request)
-        XCTAssertNil(error)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(listener!, request:request) })
 
         // Update location:
         manager.mockMoveByAtLeast(5)
@@ -355,7 +394,7 @@ class ELLocationTests: XCTestCase {
         let provider = LocationManager(manager: manager)
         let subject = LocationAuthorizationService(locationAuthorizationProvider: provider)
 
-        let error = subject.requestAuthorization(authorization)
+        let error = catch_error { try subject.requestAuthorization(authorization) }
 
         if error != nil {
             XCTAssertNil(manager.requestedAuthorization, "Authorization is not requested when an error is returned")
@@ -504,20 +543,16 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that distance filter decreases:
 
-        let error1 = subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { _,_,_ in })
-        XCTAssertNil(error1)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { _,_,_ in }) })
         XCTAssertEqual(manager.distanceFilter, 500)
 
-        let error2 = subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { _,_,_ in })
-        XCTAssertNil(error2)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { _,_,_ in }) })
         XCTAssertEqual(manager.distanceFilter, 50)
 
-        let error3 = subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { _,_,_ in })
-        XCTAssertNil(error3)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { _,_,_ in }) })
         XCTAssertEqual(manager.distanceFilter, 5)
 
-        let error4 = subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { _,_,_ in })
-        XCTAssertNil(error4)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { _,_,_ in }) })
         XCTAssertEqual(manager.distanceFilter, 2)
 
         // Remove listeners from lowest to highest accuracy and verify that distance filter DOES NOT CHANGE:
@@ -548,20 +583,16 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that desired accuracy increases:
 
-        let error1 = subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (_,_,_) -> Void in })
-        XCTAssertNil(error1)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (_,_,_) -> Void in }) })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyKilometer)
 
-        let error2 = subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (_,_,_) -> Void in })
-        XCTAssertNil(error2)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (_,_,_) -> Void in }) })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
 
-        let error3 = subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (_,_,_) -> Void in })
-        XCTAssertNil(error3)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (_,_,_) -> Void in }) })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
 
-        let error4 = subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (_,_,_) -> Void in })
-        XCTAssertNil(error4)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (_,_,_) -> Void in }) })
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
 
         // Remove listeners from lowest to highest accuracy and verify that desired accuracy DOES NOT CHANGE:
@@ -600,8 +631,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        let error = subject.registerListener(listener, request:request)
-        XCTAssertNil(error)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
 
         // Update location:
         manager.mockMoveByAtLeast(0.1)
@@ -655,8 +685,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        let error = subject.registerListener(listener, request:request)
-        XCTAssertNil(error)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
 
         // Update location:
         manager.mockMoveByAtLeast(0.001)
@@ -716,8 +745,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        let error = subject.registerListener(listener, request:request)
-        XCTAssertNil(error)
+        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
 
         // Update location:
         manager.mockMoveByAtLeast(threshold)
