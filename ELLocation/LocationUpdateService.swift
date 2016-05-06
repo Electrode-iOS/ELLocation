@@ -8,7 +8,7 @@
 
 // A protocol for a type that wants to provide location updates.
 public protocol LocationUpdateProvider {
-    func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError?
+    func registerListener(listener: AnyObject, request: LocationUpdateRequest) throws
     func deregisterListener(listener: AnyObject)
 }
 
@@ -25,11 +25,10 @@ public struct LocationUpdateService: LocationUpdateProvider {
 
      - parameter listener: The listener to register.
      - parameter request: The parameters of the request.
-     - returns: An optional error that could happen when registering. See `ELLocationError`.
+     - throws: `ELLocationError.LocationServicesDisabled` if location services are disabled on the device.
      */
-    @warn_unused_result
-    public func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
-        return locationProvider.registerListener(listener, request: request)
+    public func registerListener(listener: AnyObject, request: LocationUpdateRequest) throws {
+        try locationProvider.registerListener(listener, request: request)
     }
 
     /**

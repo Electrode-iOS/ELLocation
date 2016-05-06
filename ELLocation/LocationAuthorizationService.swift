@@ -8,7 +8,7 @@
 
 // A protocol for a type that wants to provide location authorization.
 public protocol LocationAuthorizationProvider {
-    func requestAuthorization(authorization: LocationAuthorization) -> NSError?
+    func requestAuthorization(authorization: LocationAuthorization) throws
 }
 
 // The interface for requesting location authorization
@@ -19,11 +19,11 @@ public struct LocationAuthorizationService: LocationAuthorizationProvider {
      Request the specified authorization.
 
      - parameter authorization: The authorization being requested.
-     - returns: An optional error that could happen when requesting authorization. See `ELLocationError`.
+     - throws: `ELLocationError` if the authorization request is not possible. Note that an error
+               is **not** thrown by this method if the user _declines_ to authorize access.
      */
-    @warn_unused_result
-    public func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
-        return locationAuthorizationProvider.requestAuthorization(authorization)
+    public func requestAuthorization(authorization: LocationAuthorization) throws {
+        try locationAuthorizationProvider.requestAuthorization(authorization)
     }
 
     public init() {

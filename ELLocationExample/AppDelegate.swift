@@ -18,15 +18,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        if let requestAuthError = LocationAuthorizationService().requestAuthorization(.WhenInUse) {
-            //TODO: Client needs to process error and re-request auth
-            assert(requestAuthError.domain == ELLocationErrorDomain, "request authorization returned error with unexpected domain '\(requestAuthError.domain)'")
-            print("REQUEST AUTH: error requesting authorization. error is \(requestAuthError.localizedDescription)")
-        } else {
-            startLocationUpdates()
-        }
-        
+        requestLocationAuthorization()
+
         return true
+    }
+
+    private func requestLocationAuthorization() {
+        do {
+            try LocationAuthorizationService().requestAuthorization(.WhenInUse)
+        } catch {
+            //TODO: Client needs to process error and re-request auth. See code
+            //documentation for information on what errors can be thrown.
+            assert(error is ELLocationError, "request authorization returned error with unexpected error '\(error)'")
+            print("REQUEST AUTH: error requesting authorization, error: \(error).")
+        }
+
+        startLocationUpdates()
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -66,12 +73,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         // Register the listener
-        if let addListenerError = LocationUpdateService().registerListener(self, request: request) {
-            print("LISTENER 1: error in adding the listener. error is \(addListenerError.localizedDescription)")
-        } else {
-            print("LISTENER 1 ADDED")
+        do {
+            try LocationUpdateService().registerListener(self, request: request)
+        } catch {
+            print("LISTENER 1: error in adding the listener. error is \(error)")
+            return
         }
+
+        print("LISTENER 1 ADDED")
     }
-
 }
-

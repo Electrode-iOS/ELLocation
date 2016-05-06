@@ -258,9 +258,9 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
     // MARK: LocationUpdateProvider
 
-    func registerListener(listener: AnyObject, request: LocationUpdateRequest) -> NSError? {
-        if let locationServicesError = checkIfLocationServicesEnabled() {
-            return locationServicesError
+    func registerListener(listener: AnyObject, request: LocationUpdateRequest) throws {
+        guard manager.coreLocationServicesEnabled else {
+            throw ELLocationError.LocationServicesDisabled
         }
 
         let locationListener = LocationListener(listener: listener, request: request)
@@ -272,8 +272,6 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         }
 
         updateLocationMonitoring()
-
-        return nil
     }
 
     func deregisterListener(listener: AnyObject) {
@@ -302,9 +300,9 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
     // MARK: LocationAuthorizationProvider
 
-    func requestAuthorization(authorization: LocationAuthorization) -> NSError? {
-        if let locationServicesError = checkIfLocationServicesEnabled() {
-            return locationServicesError
+    func requestAuthorization(authorization: LocationAuthorization) throws {
+        guard manager.coreLocationServicesEnabled else {
+            throw ELLocationError.LocationServicesDisabled
         }
 
         // Note: According to Apple's documentation, requesting authorization *only* works if the current status
@@ -344,23 +342,23 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         switch (authorizationStatus, authorization) {
 
         case (.Denied, _):
-            return NSError(ELLocationError.AuthorizationDenied)
+            throw ELLocationError.AuthorizationDenied
 
         case (.Restricted, _):
-            return NSError(ELLocationError.AuthorizationRestricted)
+            throw ELLocationError.AuthorizationRestricted
 
         case (.AuthorizedWhenInUse, .Always):
-            return NSError(ELLocationError.AuthorizationWhenInUse)
+            throw ELLocationError.AuthorizationWhenInUse
 
         case (.NotDetermined, .WhenInUse):
             if manager.whenInUseUsageDescription == nil {
-                return NSError(ELLocationError.UsageDescriptionMissing)
+                throw ELLocationError.UsageDescriptionMissing
             }
             manager.requestWhenInUseAuthorization()
 
         case (.NotDetermined, .Always):
             if manager.alwaysUsageDescription == nil {
-                return NSError(ELLocationError.UsageDescriptionMissing)
+                throw ELLocationError.UsageDescriptionMissing
             }
             manager.requestAlwaysAuthorization()
 
@@ -368,8 +366,6 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
             // We already have the desired authorization (or higher).
             break
         }
-
-        return nil
     }
 
     // MARK: Internal Interface
@@ -396,14 +392,6 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
                 manager.stopUpdatingLocation()
                 manager.stopMonitoringSignificantLocationChanges()
             }
-        }
-    }
-
-    private func checkIfLocationServicesEnabled() -> NSError? {
-        if manager.coreLocationServicesEnabled {
-            return nil
-        } else {
-            return NSError(ELLocationError.LocationServicesDisabled)
         }
     }
 

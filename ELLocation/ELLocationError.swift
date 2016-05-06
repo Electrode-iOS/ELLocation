@@ -8,9 +8,7 @@
 
 import ELFoundation
 
-public let ELLocationErrorDomain = "ELLocationErrorDomain"
-
-public enum ELLocationError: Int, NSErrorEnum {
+public enum ELLocationError: ErrorType {
     /// The user's device has been configured to restrict access to location services.
     case AuthorizationRestricted
     /// The user has denied access to location services.
@@ -21,10 +19,6 @@ public enum ELLocationError: Int, NSErrorEnum {
     case AuthorizationWhenInUse
     /// Location services are disabled.
     case LocationServicesDisabled
-
-    public var domain: String {
-        return ELLocationErrorDomain
-    }
 
     public var errorDescription: String {
         switch self {
