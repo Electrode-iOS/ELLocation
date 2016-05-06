@@ -260,7 +260,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
     func registerListener(listener: AnyObject, request: LocationUpdateRequest) throws {
         guard manager.coreLocationServicesEnabled else {
-            throw NSError(ELLocationError.LocationServicesDisabled)
+            throw ELLocationError.LocationServicesDisabled
         }
 
         let locationListener = LocationListener(listener: listener, request: request)
@@ -302,7 +302,7 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
 
     func requestAuthorization(authorization: LocationAuthorization) throws {
         guard manager.coreLocationServicesEnabled else {
-            throw NSError(ELLocationError.LocationServicesDisabled)
+            throw ELLocationError.LocationServicesDisabled
         }
 
         // Note: According to Apple's documentation, requesting authorization *only* works if the current status
@@ -342,23 +342,23 @@ class LocationManager: NSObject, LocationUpdateProvider, LocationAuthorizationPr
         switch (authorizationStatus, authorization) {
 
         case (.Denied, _):
-            throw NSError(ELLocationError.AuthorizationDenied)
+            throw ELLocationError.AuthorizationDenied
 
         case (.Restricted, _):
-            throw NSError(ELLocationError.AuthorizationRestricted)
+            throw ELLocationError.AuthorizationRestricted
 
         case (.AuthorizedWhenInUse, .Always):
-            throw NSError(ELLocationError.AuthorizationWhenInUse)
+            throw ELLocationError.AuthorizationWhenInUse
 
         case (.NotDetermined, .WhenInUse):
             if manager.whenInUseUsageDescription == nil {
-                throw NSError(ELLocationError.UsageDescriptionMissing)
+                throw ELLocationError.UsageDescriptionMissing
             }
             manager.requestWhenInUseAuthorization()
 
         case (.NotDetermined, .Always):
             if manager.alwaysUsageDescription == nil {
-                throw NSError(ELLocationError.UsageDescriptionMissing)
+                throw ELLocationError.UsageDescriptionMissing
             }
             manager.requestAlwaysAuthorization()
 
