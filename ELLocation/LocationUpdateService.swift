@@ -25,7 +25,7 @@ public struct LocationUpdateService: LocationUpdateProvider {
 
      - parameter listener: The listener to register.
      - parameter request: The parameters of the request.
-     - returns: An optional error that could happen when registering. See `ELLocationError`.
+     - throws: `ELLocationError.LocationServicesDisabled` if location services are disabled on the device.
      */
     public func registerListener(listener: AnyObject, request: LocationUpdateRequest) throws {
         try locationProvider.registerListener(listener, request: request)
