@@ -73,7 +73,7 @@ class MockCLLocationManager: ELCLLocationManager {
 /**
  Similar to `XCTAssertThrows()`, but for Swift errors, not `NSException`s.
  */
-public func XCTAssertSwiftThrows(expression: () throws -> Void, _ message: String = "Expresssion should throw error", file: String = __FILE__, line: UInt = __LINE__) {
+public func XCTAssertSwiftThrows(file: StaticString = #file, line: UInt = #line, _ message: String = "Expresssion should throw error", expression: () throws -> Void) {
     do {
         try expression()
         XCTFail(message, file: file, line: line)
@@ -85,7 +85,7 @@ public func XCTAssertSwiftThrows(expression: () throws -> Void, _ message: Strin
 /**
  Similar to `XCTAssertNoThrow()` but for Swift errors, not `NSException`s.
  */
-public func XCTAssertSwiftNoThrow(expression: () throws -> Void, _ message: String = "Expression should not throw error", file: String = __FILE__, line: UInt = __LINE__) {
+public func XCTAssertSwiftNoThrow(file: StaticString = #file, line: UInt = #line, _ message: String = "Expression should not throw error", expression: () throws -> Void) {
     do {
         try expression()
         // OK
@@ -195,15 +195,15 @@ class ELLocationTests: XCTestCase {
         let request = LocationUpdateRequest() { (success, location, error) -> Void in }
 
         manager.withMockServicesEnabled(false) {
-            XCTAssertSwiftThrows({
+            XCTAssertSwiftThrows("Register throws error when location services are disabled") {
                 try subject.registerListener(listener, request: request)
-            }, "Register throws error when location services are disabled")
+            }
         }
 
         manager.withMockServicesEnabled(true) {
-            XCTAssertSwiftNoThrow({
+            XCTAssertSwiftNoThrow("Register does not throw error when location services are enabled") {
                 try subject.registerListener(listener, request: request)
-            }, "Register does not throw error when location services are enabled")
+            }
         }
     }
     
@@ -221,7 +221,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(listener, request:request) }
 
         // Update location:
         manager.mockMoveByAtLeast(5)
@@ -273,10 +273,10 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request1) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(listener, request:request1) }
 
         // Add listener again with a new request:
-        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request: request2) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(listener, request: request2) }
 
         // Update location:
         manager.mockMoveByAtLeast(1)
@@ -333,7 +333,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        XCTAssertSwiftNoThrow({ try subject.registerListener(listener!, request:request) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(listener!, request:request) }
 
         // Update location:
         manager.mockMoveByAtLeast(5)
@@ -543,16 +543,16 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that distance filter decreases:
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { _,_,_ in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { _,_,_ in }) }
         XCTAssertEqual(manager.distanceFilter, 500)
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { _,_,_ in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { _,_,_ in }) }
         XCTAssertEqual(manager.distanceFilter, 50)
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { _,_,_ in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { _,_,_ in }) }
         XCTAssertEqual(manager.distanceFilter, 5)
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { _,_,_ in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { _,_,_ in }) }
         XCTAssertEqual(manager.distanceFilter, 2)
 
         // Remove listeners from lowest to highest accuracy and verify that distance filter DOES NOT CHANGE:
@@ -583,16 +583,16 @@ class ELLocationTests: XCTestCase {
 
         // Add listeners from lowest to highest accuracy and verify that desired accuracy increases:
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (_,_,_) -> Void in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(coarseListener, request: LocationUpdateRequest(accuracy: .Coarse) { (_,_,_) -> Void in }) }
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyKilometer)
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (_,_,_) -> Void in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(goodListener, request: LocationUpdateRequest(accuracy: .Good) { (_,_,_) -> Void in }) }
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyHundredMeters)
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (_,_,_) -> Void in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(betterListener, request: LocationUpdateRequest(accuracy: .Better) { (_,_,_) -> Void in }) }
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyNearestTenMeters)
 
-        XCTAssertSwiftNoThrow({ try subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (_,_,_) -> Void in }) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(bestListener, request: LocationUpdateRequest(accuracy: .Best) { (_,_,_) -> Void in }) }
         XCTAssertEqual(manager.desiredAccuracy, kCLLocationAccuracyBest)
 
         // Remove listeners from lowest to highest accuracy and verify that desired accuracy DOES NOT CHANGE:
@@ -631,7 +631,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(listener, request:request) }
 
         // Update location:
         manager.mockMoveByAtLeast(0.1)
@@ -685,7 +685,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(listener, request:request) }
 
         // Update location:
         manager.mockMoveByAtLeast(0.001)
@@ -745,7 +745,7 @@ class ELLocationTests: XCTestCase {
         }
 
         // Add listener:
-        XCTAssertSwiftNoThrow({ try subject.registerListener(listener, request:request) })
+        XCTAssertSwiftNoThrow(){ try subject.registerListener(listener, request:request) }
 
         // Update location:
         manager.mockMoveByAtLeast(threshold)
