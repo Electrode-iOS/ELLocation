@@ -1,18 +1,25 @@
-# ELLocation [![Build Status](https://travis-ci.org/Electrode-iOS/ELLocation.svg)](https://travis-ci.org/Electrode-iOS/ELLocation)
+# ELLocation 
 
-`ELLocation` is intended to be a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends. `ELLocation` is also designed to work well with, and to utilize other libraries in [Electrode-iOS](https://github.com/Electrode-iOS).
+[![Version](https://img.shields.io/badge/version-v2.0.0-blue.svg)](https://github.com/Electrode-iOS/ELMaestro/releases/latest)
+[![Build Status](https://travis-ci.org/Electrode-iOS/ELLocation.svg?branch=master)](https://travis-ci.org/Electrode-iOS/ELLocation)
 
-## A quick word about dependencies
+`ELLocation` is a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends.
 
-`ELLocation` depends on [`ELFoundation`/ELFoundation](https://github.com/Electrode-iOS/ELFoundation).
+## Requirements
 
-THG projects are designed to live side-by-side in the file system, like so:
+ELLocation requires Swift 2.2, Xcode 7.3 and [ELFoundation](https://github.com/Electrode-iOS/ELFoundation).
+
+[Electrode-iOS](https://github.com/Electrode-iOS/) frameworks are designed to live side-by-side in the file system, like so:
 
 * \MyProject
 * \MyProject\ELFoundation
 * \MyProject\ELLocation
 
-## Common Usage
+## Installation
+
+Install by adding ELLocation.xcodeproj to your project and configuring your target to link ELLocation.framework.
+
+## Usage
 
 `ELLocation` can be used for authorizing for location services and for setting up an object to receive location updates.
 
@@ -68,17 +75,11 @@ let request = LocationUpdateRequest(accuracy: .Good, updateFrequency: .ChangesOn
 
 Combining `accuracy: .Coarse` with `updateFrequency: .ChangesOnly`, along with `requestAuthorization(.Always)` yields the lowest battery usage, at the expense of less accurate location data and infrequent updates.
 
-## Contributions
-
-We appreciate your contributions to all of our projects and look forward to interacting with you via Pull Requests, the issue tracker, via Twitter, etc.  We're happy to help you, and to have you help us.  We'll strive to answer every PR and issue and be very transparent in what we do.
-
-When contributing code, please refer to our [Dennis](https://github.com/Electrode-iOS/Dennis).
-
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Walmart, and other Contributors
+Copyright (c) 2015-2016 Walmart, and other Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -97,4 +98,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
