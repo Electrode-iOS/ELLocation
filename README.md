@@ -1,7 +1,6 @@
 # ELLocation 
 
-[![Version](https://img.shields.io/badge/version-v2.0.0-blue.svg)](https://github.com/Electrode-iOS/ELMaestro/releases/latest)
-[![Build Status](https://travis-ci.org/Electrode-iOS/ELLocation.svg?branch=master)](https://travis-ci.org/Electrode-iOS/ELLocation)
+**Note:** This framework has been deprecated. It is no longer being actively maintained and will not be updated for future versions of Swift or iOS.
 
 `ELLocation` is a wrapper around iOS's location services. Its goal is to provide convenient and concise wrappers to access `CLLocationManager` and friends.
 
